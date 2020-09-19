@@ -11,41 +11,9 @@
     
     
     <item>
-      <title>Test Titles</title>
-      <link>https://outoforderband.co.uk/test/</link>
-      <pubDate>Tue, 15 Dec 2015 00:00:01 +0000</pubDate>
-      
-      <guid>https://outoforderband.co.uk/test/</guid>
-      <description>Secure access to a webpage, without the need for a logon, can often be viewed as a bit of a holy grail solution.
-Recently, I introduced a frictionless *(logon free) *way of providing secure(ish) access to some very basic web services.
-….I can hear all those security experts screaming already!
- Before I proceed any further, please note that this solution must never be seen as a proper security authentication replacement!</description>
-    </item>
-    
-    <item>
-      <title>Tracking devices in UniFi WiFi</title>
-      <link>https://outoforderband.co.uk/test2/</link>
-      <pubDate>Tue, 15 Dec 2015 00:00:01 +0000</pubDate>
-      
-      <guid>https://outoforderband.co.uk/test2/</guid>
-      <description>Several years ago, we migrated from a Cisco Wi-Fi infrastructure to a UniFi setup.
-UniFi (from Ubiquiti Networks) offer a pretty remarkable WiFi solution, especially when it comes down to cost. I shan’t go into the in’s and out’s of UniFi, as apart from anything else, I can’t claim to be an expert in the technology. In many ways, it just works!
- What’s interesting, is the database supporting the UniFi controller is MongoDB (a NoSQL database, that can be queried using JavaScript).</description>
-    </item>
-    
-    <item>
-      <title>Out Of Order Band - Oops!</title>
-      <link>https://outoforderband.co.uk/404/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://outoforderband.co.uk/404/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Out Of Order Band Contact</title>
       <link>https://outoforderband.co.uk/contact/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <pubDate>Sat, 19 Sep 2020 00:00:01 +0000</pubDate>
       
       <guid>https://outoforderband.co.uk/contact/</guid>
       <description></description>
@@ -54,9 +22,18 @@ UniFi (from Ubiquiti Networks) offer a pretty remarkable WiFi solution, especial
     <item>
       <title>Out Of Order Band Gigs</title>
       <link>https://outoforderband.co.uk/gigs/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <pubDate>Sat, 19 Sep 2020 00:00:01 +0000</pubDate>
       
       <guid>https://outoforderband.co.uk/gigs/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Out Of Order Band Videos</title>
+      <link>https://outoforderband.co.uk/videos/</link>
+      <pubDate>Sat, 19 Sep 2020 00:00:01 +0000</pubDate>
+      
+      <guid>https://outoforderband.co.uk/videos/</guid>
       <description></description>
     </item>
     
@@ -66,15 +43,6 @@ UniFi (from Ubiquiti Networks) offer a pretty remarkable WiFi solution, especial
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://outoforderband.co.uk/setlist/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Out Of Order Band Videos</title>
-      <link>https://outoforderband.co.uk/videos/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://outoforderband.co.uk/videos/</guid>
       <description></description>
     </item>
     
