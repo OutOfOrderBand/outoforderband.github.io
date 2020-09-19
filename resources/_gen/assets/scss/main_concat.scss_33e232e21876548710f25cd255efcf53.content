@@ -734,6 +734,9 @@ a:hover {
 a:visited {
   color: #d9d9d9; }
 
+.ns-404 {
+  color: #c62129; }
+
 /* End Basics */
 /* Start Menu */
 .pie {
