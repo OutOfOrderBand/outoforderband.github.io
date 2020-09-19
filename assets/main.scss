@@ -195,8 +195,6 @@ a:visited {
   /* Use "linear-gradient" to add a darken background effect to the image (photographer.jpg). This will make the text easier to read */
   background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
     url("/img/BandHeader.jpg?v=fingerprint");
-  animation: blur 0.5s;
-  animation-fill-mode: forwards;
 
   /* Set a specific height */
   height: 50%;
@@ -212,8 +210,6 @@ a:visited {
   /* Use "linear-gradient" to add a darken background effect to the image (photographer.jpg). This will make the text easier to read */
   background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
     url("/img/BandHeader.webp?v=fingerprint");
-  animation: blur 0.5s;
-  animation-fill-mode: forwards;
 
   /* Set a specific height */
   height: 50%;
@@ -229,8 +225,6 @@ a:visited {
   /* Use "linear-gradient" to add a darken background effect to the image (photographer.jpg). This will make the text easier to read */
   background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
     url("/img/BandHeader.avif?v=fingerprint");
-  animation: blur 0.5s;
-  animation-fill-mode: forwards;
 
   /* Set a specific height */
   height: 50%;
