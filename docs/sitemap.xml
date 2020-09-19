@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>https://email-us.co.uk/test/</loc>
+    <lastmod>2015-12-15T00:00:01+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://email-us.co.uk/test2/</loc>
+    <lastmod>2015-12-15T00:00:01+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://email-us.co.uk/categories/</loc>
+  </url>
+  
+  <url>
+    <loc>https://email-us.co.uk/</loc>
+  </url>
+  
+  <url>
+    <loc>https://email-us.co.uk/404/</loc>
+  </url>
+  
+  <url>
+    <loc>https://email-us.co.uk/contact/</loc>
+  </url>
+  
+  <url>
+    <loc>https://email-us.co.uk/gigs/</loc>
+  </url>
+  
+  <url>
+    <loc>https://email-us.co.uk/setlist/</loc>
+  </url>
+  
+  <url>
+    <loc>https://email-us.co.uk/videos/</loc>
+  </url>
+  
+  <url>
+    <loc>https://email-us.co.uk/tags/</loc>
+  </url>
+  
+</urlset>
