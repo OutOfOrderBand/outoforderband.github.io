@@ -3,4 +3,3 @@ languageCode = "en-uk"
 title = "Out Of Order Band"
 publishDir = "docs"
 staticDir = ["static"]
-enableRobotsTXT = "true"
