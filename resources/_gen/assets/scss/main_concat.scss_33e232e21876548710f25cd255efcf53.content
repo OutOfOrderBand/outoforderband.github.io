@@ -875,9 +875,30 @@ a:visited {
 /* End Menu */
 /* Header*/
 /* The hero image */
+@keyframes blur {
+  0%,
+  100% {
+    -webkit-filter: blur(0px); }
+  50% {
+    -webkit-filter: blur(3px); } }
+
+.hero-image-preload {
+  /* Use "linear-gradient" to add a darken background effect to the image (photographer.jpg). This will make the text easier to read */
+  background-image: url("/img/BandHeaderSquoosh.jpg?v=fingerprint");
+  filter: blur(30px);
+  /* Set a specific height */
+  height: 50%;
+  /* Position and center the image to scale nicely on all screens */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative; }
+
 .hero-image {
   /* Use "linear-gradient" to add a darken background effect to the image (photographer.jpg). This will make the text easier to read */
   background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("/img/BandHeader.jpg?v=fingerprint");
+  animation: blur 0.5s;
+  animation-fill-mode: forwards;
   /* Set a specific height */
   height: 50%;
   /* Position and center the image to scale nicely on all screens */
@@ -889,6 +910,8 @@ a:visited {
 .webp .hero-image {
   /* Use "linear-gradient" to add a darken background effect to the image (photographer.jpg). This will make the text easier to read */
   background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("/img/BandHeader.webp?v=fingerprint");
+  animation: blur 0.5s;
+  animation-fill-mode: forwards;
   /* Set a specific height */
   height: 50%;
   /* Position and center the image to scale nicely on all screens */
@@ -900,6 +923,8 @@ a:visited {
 .avif .hero-image {
   /* Use "linear-gradient" to add a darken background effect to the image (photographer.jpg). This will make the text easier to read */
   background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("/img/BandHeader.avif?v=fingerprint");
+  animation: blur 0.5s;
+  animation-fill-mode: forwards;
   /* Set a specific height */
   height: 50%;
   /* Position and center the image to scale nicely on all screens */
