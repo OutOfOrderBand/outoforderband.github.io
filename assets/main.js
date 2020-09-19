@@ -11,12 +11,6 @@ window.addEventListener("load", () => {
   });
 });
 
-$(document).ready(function () {
-  $(".hero-image-preload")
-    .removeClass("hero-image-preload")
-    .addClass("hero-image");
-});
-
 function decodeEmail(encodedString) {
   // Holds the final output
   var email = "";
