@@ -286,13 +286,15 @@ a:visited {
 /* End Header */
 
 /* Contact & Setlist */
-.ns-contact-shell, .ns-setlist-shell{
+.ns-contact-shell,
+.ns-setlist-shell {
   margin: auto;
   max-width: 700px;
   padding: 15px;
 }
 
-.ns-contact, .ns-setlist {
+.ns-contact,
+.ns-setlist {
   padding: 15px;
   background-color: $ooob-white;
   position: relative;
@@ -315,7 +317,8 @@ a:visited {
   }
 }
 
-.ns-contact-details, .ns-setlist-details  {
+.ns-contact-details,
+.ns-setlist-details {
   font-size: 1.4em;
   color: $ooob-black;
   text-shadow: 1px 4px 7px rgba(198, 33, 41, 0.38);
@@ -333,7 +336,8 @@ a:visited {
   color: lighten($ooob-black, 15%);
 }
 
-.ns-h1-contact, .ns-h1-setlist {
+.ns-h1-contact,
+.ns-h1-setlist {
   color: $ooob-red;
 }
 

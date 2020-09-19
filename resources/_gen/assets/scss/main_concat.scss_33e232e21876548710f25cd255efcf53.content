@@ -957,28 +957,34 @@ a:visited {
 
 /* End Header */
 /* Contact & Setlist */
-.ns-contact-shell, .ns-setlist-shell {
+.ns-contact-shell,
+.ns-setlist-shell {
   margin: auto;
   max-width: 700px;
   padding: 15px; }
 
-.ns-contact, .ns-setlist {
+.ns-contact,
+.ns-setlist {
   padding: 15px;
   background-color: #fff;
   position: relative;
   text-align: center;
   margin-bottom: 50px;
   box-shadow: 0px 10px 52px -12px rgba(0, 0, 0, 0.75); }
-  .ns-contact ul, .ns-setlist ul {
+  .ns-contact ul,
+  .ns-setlist ul {
     list-style: none;
     padding-left: 0; }
-  .ns-contact li, .ns-setlist li {
+  .ns-contact li,
+  .ns-setlist li {
     margin-bottom: 10px; }
-  .ns-contact [class^="icon"], .ns-setlist [class^="icon"] {
+  .ns-contact [class^="icon"],
+  .ns-setlist [class^="icon"] {
     width: 15px;
     height: 15px; }
 
-.ns-contact-details, .ns-setlist-details {
+.ns-contact-details,
+.ns-setlist-details {
   font-size: 1.4em;
   color: #000;
   text-shadow: 1px 4px 7px rgba(198, 33, 41, 0.38); }
@@ -992,7 +998,8 @@ a:visited {
 .ns-contact a:hover {
   color: #262626; }
 
-.ns-h1-contact, .ns-h1-setlist {
+.ns-h1-contact,
+.ns-h1-setlist {
   color: #c62129; }
 
 /* End Contact */
