@@ -1,2 +1,0 @@
-# OOOB
-OOOB Hugo Website
