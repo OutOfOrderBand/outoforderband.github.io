@@ -46,16 +46,5 @@
       <description></description>
     </item>
     
-    <item>
-      <title>Tracking devices in UniFi WiFi</title>
-      <link>https://outoforderband.co.uk/test/</link>
-      <pubDate>Tue, 15 Dec 2015 00:00:01 +0000</pubDate>
-      
-      <guid>https://outoforderband.co.uk/test/</guid>
-      <description>Several years ago, we migrated from a Cisco Wi-Fi infrastructure to a UniFi setup.
-UniFi (from Ubiquiti Networks) offer a pretty remarkable WiFi solution, especially when it comes down to cost. I shan’t go into the in’s and out’s of UniFi, as apart from anything else, I can’t claim to be an expert in the technology. In many ways, it just works!
- What’s interesting, is the database supporting the UniFi controller is MongoDB (a NoSQL database, that can be queried using JavaScript).</description>
-    </item>
-    
   </channel>
 </rss>
