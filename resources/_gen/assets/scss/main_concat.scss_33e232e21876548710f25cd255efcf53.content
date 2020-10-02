@@ -1125,7 +1125,8 @@ footer {
   background-color: #000;
   bottom: 0px;
   text-align: center;
-  width: 100%; }
+  width: 100%;
+  z-index: 9999; }
   footer p {
     padding-top: 8px; }
 
