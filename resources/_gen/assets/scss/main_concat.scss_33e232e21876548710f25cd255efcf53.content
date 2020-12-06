@@ -967,7 +967,8 @@ a:visited {
   margin: auto;
   max-width: 800px;
   position: relative;
-  text-align: center; }
+  text-align: center;
+  z-index: 10; }
 
 /* End Header */
 /* Contact & Setlist */
