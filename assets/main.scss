@@ -446,9 +446,7 @@ hr {
     top: 55%;
     left: 50%;
     transform: translate(-50%, -50%);
-    -webkit-transform: translate(-50%, -50%);
-    content: url("/img/play.svg");
-    font-size: 50px;
+    -webkit-transform: translate(-50%, -50%); 
     opacity: 0.8;
     text-shadow: 0px 0px 30px rgba(0, 0, 0, 0.5);
     z-index: 1;
