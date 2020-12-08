@@ -1084,6 +1084,21 @@ hr {
     text-shadow: 0px 0px 30px rgba(0, 0, 0, 0.5);
     z-index: 1; }
 
+.NSPlay {
+  background-image: url(/img/play.svg);
+  background-repeat: no-repeat;
+  width: 30%;
+  height: 30%;
+  position: absolute;
+  left: 0%;
+  right: 0%;
+  top: 0%;
+  bottom: 0%;
+  margin: auto;
+  background-size: contain;
+  background-position: center;
+  z-index: 10; }
+
 /* End Gallery */
 /* Contact Bubble */
 .speech-bubble {
