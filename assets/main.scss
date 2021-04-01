@@ -530,3 +530,19 @@ footer {
 }
 
 /* End Footer */
+
+
+/* Link Tree */
+.ns-linktree-btn{
+  background-color: $ooob-black;
+  border: 1px solid #fff;
+  text-transform: lowercase;
+  font-size: 1em;
+  line-height: 1em;
+  padding:5px;
+ }
+
+ .ns-linktree-btn:hover{
+  background-color: $ooob-black;
+
+ }
