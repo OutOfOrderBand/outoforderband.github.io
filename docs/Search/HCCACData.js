@@ -76,8 +76,6 @@ var hccdata = {
         "PIR - Post Incident Review",
         "MI - Major Incident"
 
-
-
 ]
 
 }
