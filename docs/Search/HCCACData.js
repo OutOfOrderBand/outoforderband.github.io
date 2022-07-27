@@ -28,16 +28,7 @@ var hccdata = {
         "HC - Hampshire Constabulary",
         "CDP - Communications Design Pattern",
         "ITSD - IT Service Delivery",
-        "ITEA - IT Enterprise Architecture",
-        "ITINFRALEAD - Infrastructure Management Lead",
         "ITSA - Solution Architecture Team",
-        "ITSONS - Network Administrators",
-        "ITSOSYSINF - Systems Infrastructure",
-        "ITSOIM - Infrastructure Maintenance",
-        "ITSOIR - Infrastructure Resolution",
-        "ITSOSYSDEL - Infrastructure Delivery/Projects",
-        "ITSOTD - Technical Design",
-        "ITSODCDMT - Data Centre & Data Management Team",
         "HITS - High Privilege Account",
         "SLAM - Starters, Leavers or Movers",
         "2LS - Second Level Support",
@@ -75,6 +66,8 @@ var hccdata = {
         "RCA - Root Cause Analysis",
         "PIR - Post Incident Review",
         "MI - Major Incident"
+
+
 
 ]
 
