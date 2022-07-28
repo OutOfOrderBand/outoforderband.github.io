@@ -71,8 +71,6 @@ var hccdata = {
         "ESCR - Electronic Social Care Record",
         "SIRO - Senior Information Risk Owner"
 
-
-
 ]
 
 }
