@@ -65,7 +65,13 @@ var hccdata = {
         "ITIL - Information Technology Infrastructure Library",
         "RCA - Root Cause Analysis",
         "PIR - Post Incident Review",
-        "MI - Major Incident"
+        "MI - Major Incident",
+        "EDDIE - Education Data and Information Exchange",
+        "HES - Hampshire Equipment Stores",
+        "ESCR - Electronic Social Care Record",
+        "SIRO - Senior Information Risk Owner"
+
+
 
 ]
 
