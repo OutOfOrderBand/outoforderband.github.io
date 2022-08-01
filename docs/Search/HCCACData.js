@@ -71,7 +71,10 @@ var hccdata = {
         "ESCR - Electronic Social Care Record",
         "SIRO - Senior Information Risk Owner",
         "CHRIS - Care Home Referral Information System",
-        "FOI - Freedom of Information"
+        "FOI - Freedom of Information",
+        "AH&C - Adults' Health and Care",
+        "COCO - PSN Code of Connection"
+
 
 
 ]
