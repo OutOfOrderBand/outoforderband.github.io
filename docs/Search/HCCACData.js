@@ -69,7 +69,12 @@ var hccdata = {
         "EDDIE - Education Data and Information Exchange",
         "HES - Hampshire Equipment Stores",
         "ESCR - Electronic Social Care Record",
-        "SIRO - Senior Information Risk Owner"
+        "SIRO - Senior Information Risk Owner",
+        "CHRIS - Care Home Referral Information System",
+        "FOI - Freedom of Information"
+
+
+
 ]
 
 }
