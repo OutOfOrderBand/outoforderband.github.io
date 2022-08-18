@@ -78,6 +78,7 @@ var hccdata = {
         "CRTB - Corporate Resources Transformation",
         "SAD - Software Architecture Definition",
         "PID - Project Initiation Documentation"
+        
 ]
 
 }
