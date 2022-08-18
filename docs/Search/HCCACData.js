@@ -61,7 +61,6 @@ var hccdata = {
         "PRB - Portfolio Review Board",
         "ISMFAP - Information Security Management Forum Advisory Panel",
         "ISM - Ivanti Service Manager",
-        "ITKB - IT Knowledge Base",
         "ITIL - Information Technology Infrastructure Library",
         "RCA - Root Cause Analysis",
         "PIR - Post Incident Review",
@@ -73,7 +72,12 @@ var hccdata = {
         "CHRIS - Care Home Referral Information System",
         "FOI - Freedom of Information",
         "AH&C - Adults' Health and Care",
-        "COCO - PSN Code of Connection"
+        "COCO - PSN Code of Connection",
+        "BTL - Business Transformation Lead",
+        "OPG - Operational Group",
+        "CRTB - Corporate Resources Transformation",
+        "SAD - Software Architecture Definition",
+        "PID - Project Initiation Documentation"
 
 
 
