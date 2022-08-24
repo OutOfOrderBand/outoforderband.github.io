@@ -45,7 +45,7 @@ var hccdata = {
         "C4C - SAP Cloud for Customers",
         "RACI - Responsible, Accountable, Consulted and Informed",
         "VP - Valuing Performance",
-        "CMBD - Configuration Management Database",
+        "CMDB - Configuration Management Database",
         "CI - Configuration Identification",
         "VDI - Virtual Desktop Infrastructure",
         "DDD - Design Decision Document",
@@ -77,8 +77,10 @@ var hccdata = {
         "OPG - Operational Group",
         "CRTB - Corporate Resources Transformation",
         "SAD - Software Architecture Definition",
-        "PID - Project Initiation Documentation"
-        
+        "PID - Project Initiation Documentation",
+        "PMO - Project Management Office",
+	"DMT -  Departmental Management Team"
+
 
 ]
 
