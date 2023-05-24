@@ -1100,6 +1100,22 @@ hr {
   z-index: 10; }
 
 /* End Gallery */
+/* NS Button */
+.ns-button {
+  position: relative;
+  text-align: center;
+  margin: auto;
+  max-width: 250px;
+  background: #000;
+  border-radius: 0.4em;
+  z-index: 10; }
+  .ns-button :hover {
+    color: #fff; }
+  .ns-button :visited {
+    color: #fff; }
+  .ns-button :active {
+    color: #fff; }
+
 /* Contact Bubble */
 .speech-bubble {
   position: relative;

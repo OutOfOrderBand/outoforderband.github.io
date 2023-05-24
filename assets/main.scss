@@ -471,6 +471,31 @@ hr {
 
 /* End Gallery */
 
+/* NS Button */
+
+.ns-button{
+  position: relative;
+  text-align: center;
+  margin: auto;
+  max-width: 250px;
+  background: $ooob-black;
+  border-radius: 0.4em;
+  z-index: 10;
+
+  :hover {
+    color: $ooob-white;
+  }
+
+  :visited {
+    color: $ooob-white;
+  }
+
+  :active {
+    color: $ooob-white;
+  }
+}
+
+
 /* Contact Bubble */
 
 .speech-bubble {
