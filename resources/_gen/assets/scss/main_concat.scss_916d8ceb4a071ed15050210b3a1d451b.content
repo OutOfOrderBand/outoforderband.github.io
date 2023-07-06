@@ -902,7 +902,7 @@ a:visited {
 
 .webp .hero-image {
   /* Use "linear-gradient" to add a darken background effect to the image (photographer.jpg). This will make the text easier to read */
-  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("/img/BandHeader.webp?v=fingerprint");
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("/img/NewBandHeader.webp?v=fingerprint");
   /* Set a specific height */
   height: 40%;
   /* Position and center the image to scale nicely on all screens */
@@ -913,7 +913,7 @@ a:visited {
 
 .avif .hero-image {
   /* Use "linear-gradient" to add a darken background effect to the image (photographer.jpg). This will make the text easier to read */
-  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("/img/BandHeader.avif?v=fingerprint");
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("/img/NewBandHeader.avif?v=fingerprint");
   /* Set a specific height */
   height: 50%;
   /* Position and center the image to scale nicely on all screens */
