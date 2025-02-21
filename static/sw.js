@@ -44,6 +44,12 @@
 
   self.addEventListener("fetch", function (event) {
     var request = event.request;
+    var url = new URL(request.url);
+
+    // Bypass service worker for requests below the /gdata path
+    if (url.pathname.startsWith("/gdata")) {
+      return;
+    }
 
     // Always fetch non-GET requests from the network
     if (request.method !== "GET" || request.url.match(/\/browserLink/gi)) {
