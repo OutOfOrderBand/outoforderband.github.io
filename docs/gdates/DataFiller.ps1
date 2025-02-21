@@ -41,7 +41,7 @@ function Create-JsonEntries {
     for ($date = $StartDate; $date -le $EndDate; $date = $date.AddDays(1)) {
         $entry = @{
             Id = New-Guid
-            Date = $date.ToString("ddd dd MMM yyyy")
+            Date = $date.ToString("ddd dd MMM yyyy") + " (" + $date.ToString("dd/MM/yyyy") + ")"
             Description = $Description
         }
         $json.GDates += $entry
@@ -59,8 +59,8 @@ function Create-JsonEntries {
 }
 
 # Example usage
-$startDate = [DateTime]::Parse("09-06-2025")
-$endDate = [DateTime]::Parse("22-06-2025")
+$startDate = [DateTime]::Parse("04-04-2025") 
+$endDate = [DateTime]::Parse("06-04-2025")
 $jsonFilePath = "$PSScriptRoot\data\gdata.js"
 $description = "Clive Unavailable"
 
