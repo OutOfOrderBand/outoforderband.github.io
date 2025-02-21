@@ -1,0 +1,302 @@
+/* Root variables for color definitions */
+:root {
+    --red: rgb(203, 95, 93);
+    --white: rgb(255, 255, 255);
+    --dark: rgb(26, 26, 26);
+    --dark-gray: rgb(52, 52, 52);
+    --blue: rgb(58, 175, 255);
+    --pink: rgb(187, 125, 191);
+    --green: rgb(34, 255, 169);
+    --lavender: rgb(170, 175, 219);
+    --yellow: rgb(189, 190, 130);
+    --teal: rgb(143, 194, 187);
+    --gray: rgb(173, 174, 178);
+    --red2: rgb(255, 67, 119);
+    --pink2: rgb(239, 106, 167);
+    --purple: rgb(139, 108, 207);
+    --brown: rgb(161, 120, 76);
+}
+
+/* Body styling */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: var(--dark);
+    color: var(--gray);
+    overflow-y: scroll;
+    font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+/* Content container */
+.content {
+    flex: 1;
+}
+
+/* Button styling */
+button.btn.btn-primary, button.btn.btn-danger {
+    margin: 1px;
+}
+
+/* Title image styling */
+.title img {
+    margin-right: 15px;
+    background: white;
+    margin-top: 5px;
+    border-radius: 100%;
+    opacity: 0;
+    transform: scale(0.5) rotate(-30deg);
+    animation: fadeInFunky 2s ease-in-out forwards;
+}
+
+/* Keyframes for fade-in animation */
+@keyframes fadeInFunky {
+    0% {
+        opacity: 0;
+        transform: scale(0.2) rotate(-30deg);
+    }
+
+    50% {
+        opacity: 0.5;
+        transform: scale(0.7) rotate(15deg);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+/* Title styling */
+.title {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+/* Outer login container styling */
+.outer-login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Full viewport height */
+    margin: 0;
+}
+
+/* Keyframes for gradient animation */
+@keyframes gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Login container styling */
+.login-container {
+    text-align: center;
+    border: 2px solid #fff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    animation: pop-in 0.5s ease-out;
+    /* Removed margin-top adjustment */
+}
+
+/* Keyframes for pop-in animation */
+@keyframes pop-in {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Login container heading styling */
+.login-container h1 {
+    margin-bottom: 20px;
+}
+
+/* Login container div styling */
+.login-container div {
+    margin-bottom: 15px;
+}
+
+/* Login container span styling */
+.login-container span {
+    display: block;
+    margin-top: 10px;
+    color: #e91e63;
+}
+
+
+/* Footer styling */
+footer {
+    text-align: center;
+    padding: 10px;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column; /* Ensure elements are stacked vertically */
+    justify-content: center;
+    align-items: center;
+}
+
+    /* Centering buttons in the footer */
+    footer .btn {
+        margin: 10px 0; /* Add some margin for spacing */
+        display: block; /* Make the button a block-level element */
+    }
+
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--dark);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--dark-gray);
+}
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--red2);
+    }
+
+/* Text selection styling */
+::selection {
+    color: white;
+    background-color: var(--red2);
+}
+
+/* Form control styling */
+textarea.form-control,
+input.form-control,
+textarea.form-control:focus,
+input.form-control:focus {
+    background: rgb(255, 255, 255);
+    border: 1px solid transparent;
+    color: var(--gray);
+}
+
+/* Container styling */
+.container {
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Horizontal rule styling */
+hr {
+    border-top: 1px solid #111;
+}
+
+.short-hr {
+    border: 2px solid pink;
+    width: 50%;
+    margin: 20px auto;
+}
+
+/* Card styling */
+.card {
+    background: #111;
+}
+
+/* Acronym input styling */
+.acronym-input-hr {
+    border-style: none none solid;
+    border-bottom-width: 2px;
+    border-color: var(--red2);
+    margin: 0px;
+    width: 100%;
+    transform: scaleX(0);
+    opacity: 0;
+    transition: 100ms cubic-bezier(0.23, 1, 0.32, 1) 0ms;
+    transform-origin: 0 0;
+    position: absolute;
+    bottom: 0px;
+}
+
+.acronym-input:focus + .acronym-input-hr {
+    transform: scaleX(1);
+    opacity: 1;
+}
+
+.acronym-input-div {
+    display: inline-block;
+    position: relative;
+}
+
+.acronym-input {
+    background: #111;
+    border: none;
+    color: var(--gray);
+    padding-left: 9px;
+    padding-top: 10px;
+    outline: none;
+    padding-bottom: 5px;
+    border-radius: 0.25rem;
+    width: 100%;
+}
+
+.acronym-input-label {
+    transition: 100ms;
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    pointer-events: none;
+    color: #666;
+}
+
+.acronym-input:not([data-empty]) + .acronym-input-hr + .acronym-input-label,
+.acronym-input:focus + .acronym-input-hr + .acronym-input-label {
+    top: 1px;
+    left: 4px;
+    font-size: 10px;
+}
+
+.acronym-input:focus + .acronym-input-hr + .acronym-input-label {
+    color: var(--red2);
+}
+
+.acronym-input[disabled] {
+    background: none;
+}
+
+/* Input spin button removal */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+/* Bold text styling */
+b {
+    color: #dc3545;
+}
+
+/* HTML overflow styling */
+html {
+    overflow-y: scroll;
+}
