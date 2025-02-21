@@ -2,7 +2,7 @@
   "use strict";
 
   // Update 'version' if you need to refresh the cache
-  var version = "NS21022025BV3::CacheFirstSafe";
+  var version = "NS21022025BV4::CacheFirstSafe";
   var offlineUrl = "/offline.html";
 
   // Store core files in a cache (including a page to display when offline)
@@ -46,12 +46,7 @@
     var request = event.request;
     var url = new URL(request.url);
 
-    // Bypass service worker for requests below the /gdata path
-    if (url.pathname.startsWith("/gdata")) {
-      return;
-    }
-
-    // Always fetch non-GET requests from the network
+     // Always fetch non-GET requests from the network
     if (request.method !== "GET" || request.url.match(/\/browserLink/gi)) {
       event.respondWith(
         fetch(request).catch(function () {
