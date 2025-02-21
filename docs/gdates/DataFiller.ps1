@@ -18,10 +18,14 @@ function Create-JsonEntries {
         return
     }
 
-    # Read the existing JSON file
-    $json = Get-Content -Path $JsonFilePath -Raw | ConvertFrom-Json
+    # Read the existing JSON file and remove "var gData = "
+    $jsonContent = Get-Content -Path $JsonFilePath -Raw
+    $jsonContent = $jsonContent -replace '^var gData =', '' # Remove prefix if present
 
-    # Debugging output to check the JSON structure
+    # Convert from JSON
+    $json = $jsonContent | ConvertFrom-Json
+
+    # Debugging output to check the JSON structure before modification
     Write-Output "JSON structure before modification:"
     $json | ConvertTo-Json -Depth 3
 
@@ -47,14 +51,17 @@ function Create-JsonEntries {
     Write-Output "JSON structure after modification:"
     $json | ConvertTo-Json -Depth 3
 
-    # Convert back to JSON and save to file
-    $json | ConvertTo-Json -Depth 3 | Set-Content -Path $JsonFilePath
+    # Convert back to JSON and re-add "var gData ="
+    $jsonOutput = "var gData = " + ($json | ConvertTo-Json -Depth 3)
+
+    # Save back to file
+    $jsonOutput | Set-Content -Path $JsonFilePath
 }
 
 # Example usage
-$startDate = [DateTime]::Parse("21-02-2025")
-$endDate = [DateTime]::Parse("15-03-2025")
-$jsonFilePath = "$PSScriptRoot\gdata.json"
-$description = "Not Available"
+$startDate = [DateTime]::Parse("09-06-2025")
+$endDate = [DateTime]::Parse("22-06-2025")
+$jsonFilePath = "$PSScriptRoot\data\gdata.js"
+$description = "Clive Unavailable"
 
 Create-JsonEntries -StartDate $startDate -EndDate $endDate -JsonFilePath $jsonFilePath -Description $description
