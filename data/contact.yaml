@@ -2,7 +2,7 @@
   label: Email
   icon: email
   value: gigs@outoforderband.co.uk
-  href: "#"
+  href: "mailto:gigs@outoforderband.co.uk"
   class: ns-contact-details
 - type: facebook
   label: Facebook
