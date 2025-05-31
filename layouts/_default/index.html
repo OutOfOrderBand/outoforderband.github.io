@@ -1,52 +1,29 @@
-{{ define "title" }} Out Of Order Band {{end}} {{ define "main" }}
+{{ define "title" }} Out Of Order Band {{ end }}
+{{ define "main" }}
 <div class="speech-bubble">
   <a href="/contact">
     <h4>Click to get in touch!</h4>
   </a>
 </div>
 <div class="ns-gigs">
-  <div class="gallery">
-    <div>
-      <a data-fancybox="" data-ratio="2" href="https://youtube.com/embed/DFsQ27V3u_w">
+  <section class="gallery" aria-label="Band Videos">
+    {{ range site.Data.frontpagevideos }}
+    <figure>
+      <a data-fancybox data-ratio="2" href="{{ .url }}">
         <span class="video-thumbnail">
-          <div class="NSPlay"></div>
-          <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
-            data-src="https://img.youtube.com/vi/DFsQ27V3u_w/0.jpg" />
+          <div class="NSPlay" aria-label="Play video"></div>
+          <img
+            src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+            data-src="https://img.youtube.com/vi/{{ .id }}/0.jpg"
+            alt="{{ .title }} video thumbnail"
+            loading="lazy"
+          />
         </span>
       </a>
-      <p>Night Boat To Cairo!</p>
-    </div>
-    <div>
-      <a data-fancybox="" data-ratio="2" href="https://youtu.be/imC2nwPURRc">
-        <span class="video-thumbnail">
-          <div class="NSPlay"></div>
-          <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
-            data-src="https://img.youtube.com/vi/imC2nwPURRc/0.jpg" />
-        </span>
-      </a>
-      <p>Good Souls</p>
-    </div>    
-    <div>
-      <a data-fancybox="" data-ratio="2" href="https://youtu.be/embed/rP0GWQBjGvk">
-        <span class="video-thumbnail">
-          <div class="NSPlay"></div>
-          <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
-            data-src="https://img.youtube.com/vi/rP0GWQBjGvk/0.jpg" />
-        </span>
-      </a>
-      <p>Dakota Live!</p>
-    </div>
-    <div>
-      <a data-fancybox="" data-ratio="2" href="https://youtube.com/embed/KDm_sz04zdo">
-        <span class="video-thumbnail">
-          <div class="NSPlay"></div>
-          <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
-            data-src="https://img.youtube.com/vi/KDm_sz04zdo/0.jpg" />
-        </span>
-      </a>
-      <p>Chelsea Dagger Live!</p>
-    </div>
-  </div>
+      <figcaption>{{ .title }}</figcaption>
+    </figure>
+    {{ end }}
+  </section>
   <br />
   <div class="ns-button">
     <a href="/videos">
@@ -55,28 +32,24 @@
   </div>
   <br />
 
-  <h1 class="ns-h1">
-    <!--{{ (now.AddDate -1 0 0).Year }}/{{ substr (now.Year) 2 2 }}/{{ substr ((now.AddDate +1 0 0).Year) 2 2 }}&nbsp;Gigs -->
-    <!--{{ (now.AddDate -3 0 0).Year }}&nbsp;-&nbsp;{{ (now.AddDate 0 0 0).Year }}&nbsp;Gigs  -->
-    Upcoming Gigs
-  </h1>
+  <h1 class="ns-h1">Upcoming Gigs</h1>
   <ul>
-    <!-- prettier-ignore -->
-    {{ range sort $.Site.Data.gigs "Date" "desc" }}
     {{ $dateformat := now.Format "2006-01-02" }}
-    {{ if gt .Date "2019-01-01" }}
-    {{ if gt .Date $dateformat }}
-    <li class="ns-notpassed">
-      {{ dateFormat "Monday, Jan 2, 2006" .Date }}
-      <a href="{{ .URL }}" target="_blank">{{ .Location}}</a>
-    </li>
-    {{ else }}
-    <li class="ns-strikethrough">
-      {{ dateFormat "Monday, Jan 2, 2006" .Date }}
-      <a href="{{ .URL }}" target="_blank">{{ .Location}}</a>
-    </li>
-    {{ end }} {{ end }} {{ end }}
-    <!-- prettier-ignore-end-->
+    {{ range sort site.Data.gigs "Date" "desc" }}
+      {{ if gt .Date "2019-01-01" }}
+        {{ if gt .Date $dateformat }}
+          <li class="ns-notpassed">
+            {{ dateFormat "Monday, Jan 2, 2006" .Date }}
+            <a href="{{ .URL }}" target="_blank">{{ .Location }}</a>
+          </li>
+        {{ else }}
+          <li class="ns-strikethrough">
+            {{ dateFormat "Monday, Jan 2, 2006" .Date }}
+            <a href="{{ .URL }}" target="_blank">{{ .Location }}</a>
+          </li>
+        {{ end }}
+      {{ end }}
+    {{ end }}
   </ul>
 </div>
-{{end}}
+{{ end }}
