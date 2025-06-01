@@ -93,51 +93,63 @@ window.addEventListener("load", function () {
   init();
 });
 
-function decodeEmail(encodedString) {
-  // Holds the final output
-  var email = "";
+document.addEventListener("DOMContentLoaded", function() {
+  // Spin the logo on load
+  gsap.fromTo(
+    "#site-logo",
+    { rotate: 0 },
+    { rotate: 360, duration: 1.5, ease: "power2.inOut" }
+  );
 
-  // Extract the first 2 letters
-  var keyInHex = encodedString.substr(0, 2);
+  if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") return;
+  gsap.registerPlugin(ScrollTrigger);
 
-  // Convert the hex-encoded key into decimal
-  var key = parseInt(keyInHex, 16);
-
-  // Loop through the remaining encoded characters in steps of 2
-  for (var n = 2; n < encodedString.length; n += 2) {
-    // Get the next pair of characters
-    var charInHex = encodedString.substr(n, 2);
-
-    // Convert hex to decimal
-    var char = parseInt(charInHex, 16);
-
-    // XOR the character with the key to get the original character
-    var output = char ^ key;
-
-    // Append the decoded character to the output
-    email += String.fromCharCode(output);
+  // Funky effect for the next upcoming gig
+  const nextGig = document.querySelector(".ns-nextgig");
+  if (nextGig) {
+    gsap.from(nextGig, {
+      x: 0,
+      y: -80,
+      opacity: 0,
+      scale: 1.2,
+      backgroundColor: "#c62129",
+      color: "#fff",
+      duration: 1.2,
+      ease: "bounce.out",
+      scrollTrigger: {
+        trigger: nextGig,
+        start: "top 90%",
+        toggleActions: "play none none none"
+      },
+      onComplete: () => {
+        gsap.to(nextGig, {
+          backgroundColor: "",
+          color: "",
+          duration: 0.5
+        });
+      }
+    });
   }
-  return email;
-}
 
-// Find all the elements on the page that use class="eml-protected"
-var allElements = document.getElementsByClassName("eml-protected");
+  // Fly-in, spinning, for all other gigs except the next gig, line by line as you scroll
+  const otherGigs = Array.from(document.querySelectorAll("ul>li.gig-item, ul>li.ns-notpassed, ul>li.ns-strikethrough"))
+    .filter(item => !item.classList.contains("ns-nextgig"));
 
-// Loop through all the elements, and update them
-for (var i = 0; i < allElements.length; i++) {
-  updateAnchor(allElements[i]);
-}
+  if (otherGigs.length) {
+    gsap.from(otherGigs, {
+      x: () => gsap.utils.random(-300, 300),
+      y: () => gsap.utils.random(-200, 200),
+      rotate: () => gsap.utils.random(-360, 360),
+      opacity: 0,
+      duration: 1.1,
+      ease: "back.out(1.7)",
+      stagger: 0.18,
+      scrollTrigger: {
+        trigger: otherGigs[0].parentElement,
+        start: "top 90%",
+        toggleActions: "play none none none"
+      }
+    });
+  }
+});
 
-function updateAnchor(el) {
-  // fetch the hex-encoded string
-  var encoded = el.innerHTML;
-
-  // decode the email, using the decodeEmail() function from before
-  var decoded = decodeEmail(encoded);
-
-  // Replace the text (displayed) content
-  el.textContent = decoded;
-
-  // Set the link to be a "mailto:" link
-  el.href = "mailto:" + decoded;
-}

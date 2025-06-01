@@ -1,25 +1,14 @@
-<div class="pie pie1" onclick="document.body.classList.remove('active')">
-  <a href="/videos">
-    <div class="pie-color pie-color1">
-      <span class="pie-color-hyperlink videos"> VIDEOS </span>
-    </div>
-  </a>
-</div>
-<div class="pie pie2" onclick="document.body.classList.remove('active')">
-  <a href="/gigs">
-    <div class="pie-color pie-color2">
-      <span class="pie-color-hyperlink gigging"> GIGGING </span>
-    </div>
-  </a>
-</div>
-<div class="pie pie3" onclick="document.body.classList.remove('active')">
-  <a href="/contact">
-    <div class="pie-color pie-color3">
-      <span class="pie-color-hyperlink contact"> CONTACT </span>
-    </div>
-  </a>
-</div>
-<div class="menu" onclick="document.body.classList.toggle('active')">
+    {{ range site.Data.menu }}
+      <div class="pie {{ .pie }}" onclick="document.body.classList.remove('active')">
+        <a href = "{{ .url }}">  
+          <div class="pie-color {{ .color }}">
+            <span class="pie-color-hyperlink {{ .class }}"> {{ .label }} </span>
+          </div>
+        </a>
+      </div>  
+    {{ end }}
+
+<div class="main-menu" onclick="document.body.classList.toggle('active')">
   <svg
     class="hamburger"
     xmlns="http://www.w3.org/2000/svg"
@@ -36,3 +25,12 @@
     </g>
   </svg>
 </div>
+<nav class="main-menu-desktop" aria-label="Main menu">
+  <ul class="main-menu-desktop-list">
+    {{ range site.Data.menu }}
+      <li>
+        <a href="{{ .url }}" class="main-menu-desktop-link">{{ .label }}</a>
+      </li>
+    {{ end }}
+  </ul>
+</nav>

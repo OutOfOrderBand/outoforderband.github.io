@@ -1,17 +1,34 @@
 <!-- prettier-ignore -->
-{{ define "main" }}     
-     {{ range .Pages }}
-          <div style="border: 1px solid black; margin:10px; padding:10px; ">
-               <div style="font-size:20px;">
-                    <a href="{{.URL}}">{{.Title}}</a>
-               </div>
-               <div style="color:grey; font-size:16px;">{{ dateFormat "Monday, Jan 2, 2006" .Date }}</div>
-               <div style="color:grey; font-size:16px;">{{ if .Params.tags }}<strong>Tags:</strong> {{range .Params.tags}}<a href="{{ "/tags/" | relLangURL }}{{ . | urlize }}">{{ . }}</a> {{end}}{{end}}</div>
-               <div style="color:grey; font-size:16px;">{{ if .Params.categories }}<strong>Categories:</strong> {{range .Params.categories}}<a href="{{ "/categories/" | relLangURL }}{{ . | urlize }}">{{ . }}</a> {{end}}{{end}}</div>
-               <div style="color:grey; font-size:16px;">{{ if .Params.moods }}<strong>Moods:</strong> {{range .Params.moods}}<a href="{{ "/moods/" | relLangURL }}{{ . | urlize }}">{{ . }}</a> {{end}}{{end}}</div>
-
-               <p style="font-size:18px;">{{.Summary}}</p>
+{{ define "main" }}
+  <div class="post-list">
+    {{ range .Pages }}
+      <article class="post-list-item">
+        <header>
+          <h2 class="post-title">
+            <a href="{{ .URL }}">{{ .Title }}</a>
+          </h2>
+          <div class="post-meta">
+            <span class="post-date">{{ dateFormat "Monday, Jan 2, 2006" .Date }}</span>
+            {{ with .Params.tags }}
+              <span class="post-tags"><strong>Tags:</strong>
+                {{ range . }}<a href="{{ "/tags/" | relLangURL }}{{ . | urlize }}">{{ . }}</a> {{ end }}
+              </span>
+            {{ end }}
+            {{ with .Params.categories }}
+              <span class="post-categories"><strong>Categories:</strong>
+                {{ range . }}<a href="{{ "/categories/" | relLangURL }}{{ . | urlize }}">{{ . }}</a> {{ end }}
+              </span>
+            {{ end }}
+            {{ with .Params.moods }}
+              <span class="post-moods"><strong>Moods:</strong>
+                {{ range . }}<a href="{{ "/moods/" | relLangURL }}{{ . | urlize }}">{{ . }}</a> {{ end }}
+              </span>
+            {{ end }}
           </div>
-     {{ end }}
- {{end}}
+        </header>
+        <p class="post-summary">{{ .Summary }}</p>
+      </article>
+    {{ end }}
+  </div>
+{{ end }}
 <!-- prettier-ignore-end -->

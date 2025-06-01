@@ -1,0 +1,15 @@
+- url: /videos
+  class: videos
+  label: VIDEOS
+  pie: pie1
+  color: pie-color1
+- url: /gigs
+  class: gigging
+  label: GIGGING
+  pie: pie2
+  color: pie-color2
+- url: /contact
+  class: contact
+  label: CONTACT
+  pie: pie3
+  color: pie-color3

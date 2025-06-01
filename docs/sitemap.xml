@@ -1,38 +1,46 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-    xmlns:xhtml="http://www.w3.org/1999/xhtml">
-  
-    <url>
-        <loc>https://outoforderband.co.uk/</loc>
-        <lastmod>2020-09-19T00:00:01+00:00</lastmod>
-    </url>
-  
-    <url>
-        <loc>https://outoforderband.co.uk/contact/</loc>
-        <lastmod>2020-09-19T00:00:01+00:00</lastmod>
-    </url>
-  
-    <url>
-        <loc>https://outoforderband.co.uk/gigs/</loc>
-        <lastmod>2020-09-19T00:00:01+00:00</lastmod>
-    </url>
-  
-    <url>
-        <loc>https://outoforderband.co.uk/setlist/</loc>
-        <lastmod>2020-09-19T00:00:01+00:00</lastmod>
-    </url>
-  
-    <url>
-        <loc>https://outoforderband.co.uk/videos/</loc>
-        <lastmod>2020-09-19T00:00:01+00:00</lastmod>
-    </url>
-  
-    <url>
-        <loc>https://outoforderband.co.uk/categories/</loc>
-    </url>
-  
-    <url>
-        <loc>https://outoforderband.co.uk/tags/</loc>
-    </url>
-  
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://outoforderband.co.uk/</loc>
+    <lastmod>2020-09-19T00:00:01&#43;00:00</lastmod>
+    <priority>-1</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://outoforderband.co.uk/" />
+  </url>
+  <url>
+    <loc>https://outoforderband.co.uk/contact/</loc>
+    <lastmod>2020-09-19T00:00:01&#43;00:00</lastmod>
+    <priority>-1</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://outoforderband.co.uk/contact/" />
+  </url>
+  <url>
+    <loc>https://outoforderband.co.uk/gigs/</loc>
+    <lastmod>2020-09-19T00:00:01&#43;00:00</lastmod>
+    <priority>-1</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://outoforderband.co.uk/gigs/" />
+  </url>
+  <url>
+    <loc>https://outoforderband.co.uk/setlist/</loc>
+    <lastmod>2020-09-19T00:00:01&#43;00:00</lastmod>
+    <priority>-1</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://outoforderband.co.uk/setlist/" />
+  </url>
+  <url>
+    <loc>https://outoforderband.co.uk/videos/</loc>
+    <lastmod>2020-09-19T00:00:01&#43;00:00</lastmod>
+    <priority>-1</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://outoforderband.co.uk/videos/" />
+  </url>
+  <url>
+    <loc>https://outoforderband.co.uk/categories/</loc>
+    <lastmod>0001-01-01T00:00:00&#43;00:00</lastmod>
+    <priority>-1</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://outoforderband.co.uk/categories/" />
+  </url>
+  <url>
+    <loc>https://outoforderband.co.uk/tags/</loc>
+    <lastmod>0001-01-01T00:00:00&#43;00:00</lastmod>
+    <priority>-1</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://outoforderband.co.uk/tags/" />
+  </url>
 </urlset>

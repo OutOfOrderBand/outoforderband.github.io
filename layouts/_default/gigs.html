@@ -13,7 +13,7 @@
       {{ range sort $.Site.Data.gigs "Date" "desc" }}
         {{ if .Date }}
           {{ if gt .Date $dateformat }}
-            <li class="ns-notpassed">
+            <li class="ns-notpassed gig-item">
               {{ dateFormat "Monday, Jan 2, 2006" .Date }}
               {{ if and .URL .Location }}
                 <a href="{{ .URL }}" target="_blank">{{ .Location }}</a>
@@ -22,7 +22,7 @@
               {{ end }}
             </li>
           {{ else }}
-            <li class="ns-strikethrough">
+            <li class="ns-strikethrough gig-item">
               {{ dateFormat "Monday, Jan 2, 2006" .Date }}
               {{ if and .URL .Location }}
                 <a href="{{ .URL }}" target="_blank">{{ .Location }}</a>
