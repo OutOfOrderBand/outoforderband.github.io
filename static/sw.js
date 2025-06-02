@@ -1,110 +1,118 @@
-(() => {
+(function () {
   "use strict";
 
-  const version = "NS01062025V3::CacheFirstSafe";
-  const offlineUrl = "/offline.html";
+  // Update 'version' if you need to refresh the cache
+  var version = "NS27042025V2::CacheFirstSafe";
+  var offlineUrl = "/offline.html";
 
-  async function updateStaticCache() {
-    const cache = await caches.open(version);
-    return cache.addAll([offlineUrl, "/"]);
+  // Store core files in a cache (including a page to display when offline)
+  function updateStaticCache() {
+    return caches.open(version).then(function (cache) {
+      return cache.addAll([offlineUrl, "/"]);
+    });
   }
 
-  async function addToCache(request, response) {
-    if (
-      !response ||
-      !response.ok ||
-      (response.type !== "basic" && response.type !== "opaque")
-    )
-      return;
-    const cache = await caches.open(version);
-    cache.put(request, response.clone());
+  function addToCache(request, response) {
+    if (!response.ok && response.type !== "opaque") return;
+
+    var copy = response.clone();
+    caches.open(version).then(function (cache) {
+      cache.put(request, copy);
+    });
   }
 
-  self.addEventListener("install", (event) => {
+  self.addEventListener("install", function (event) {
     event.waitUntil(updateStaticCache());
-    self.skipWaiting();
   });
 
-  self.addEventListener("activate", (event) => {
+  self.addEventListener("activate", function (event) {
     event.waitUntil(
-      caches.keys().then((keys) =>
-        Promise.all(
+      caches.keys().then(function (keys) {
+        // Remove caches whose name is no longer valid
+        return Promise.all(
           keys
-            .filter((key) => key.indexOf(version) !== 0)
-            .map((key) => caches.delete(key))
-        )
-      )
+            .filter(function (key) {
+              return key.indexOf(version) !== 0;
+            })
+            .map(function (key) {
+              return caches.delete(key);
+            })
+        );
+      })
     );
-    self.clients.claim();
   });
 
-  function serveOfflineImage(request) {
-    // Optionally, serve a fallback image for image requests
-    if (request.destination === "image") {
-      // You can add a fallback image to your cache and return it here
-      // return caches.match('/offline-image.png');
-    }
-    return caches.match(offlineUrl);
-  }
+  self.addEventListener("fetch", function (event) {
+    var request = event.request;
+    var url = new URL(request.url);
 
-  self.addEventListener("fetch", (event) => {
-    const request = event.request;
-
-    // Always fetch non-GET requests from the network
+     // Always fetch non-GET requests from the network
     if (request.method !== "GET" || request.url.match(/\/browserLink/gi)) {
       event.respondWith(
-        fetch(request).catch(() => caches.match(offlineUrl))
+        fetch(request).catch(function () {
+          return caches.match(offlineUrl);
+        })
       );
       return;
     }
 
     // For HTML requests, try the network first, fall back to the cache, finally the offline page
-    if (request.headers.get("Accept")?.includes("text/html")) {
+    if (request.headers.get("Accept").indexOf("text/html") !== -1) {
       event.respondWith(
-        (async () => {
-          try {
-            const response = await fetch(request);
+        fetch(request)
+          .then(function (response) {
+            // Stash a copy of this page in the cache
             addToCache(request, response);
             return response;
-          } catch {
-            const cached = await caches.match(request);
-            return cached || caches.match(offlineUrl);
-          }
-        })()
+          })
+          .catch(function () {
+            return caches.match(request).then(function (response) {
+              return response || caches.match(offlineUrl);
+            });
+          })
       );
       return;
     }
 
-    // Cache first for fingerprinted resources
+    // cache first for fingerprinted resources
     if (request.url.match(/(\?|&)v=/gi)) {
       event.respondWith(
-        (async () => {
-          const cached = await caches.match(request);
-          if (cached) return cached;
-          try {
-            const response = await fetch(request);
-            addToCache(request, response);
-            return response || serveOfflineImage(request);
-          } catch {
-            return serveOfflineImage(request);
-          }
-        })()
+        caches.match(request).then(function (response) {
+          return (
+            response ||
+            fetch(request)
+              .then(function (response) {
+                addToCache(request, response);
+                return response || serveOfflineImage(request);
+              })
+              .catch(function () {
+                return serveOfflineImage(request);
+              })
+          );
+        })
       );
+
       return;
     }
 
-    // Network first for non-fingerprinted resources
+    // network first for non-fingerprinted resources
     event.respondWith(
-      (async () => {
-        try {
-          const response = await fetch(request);
+      fetch(request)
+        .then(function (response) {
+          // Stash a copy of this page in the cache
           addToCache(request, response);
           return response;
-        } catch {
-          const cached = await caches.match(request);
-          return cached || serveOfflineImage(request);
-        }
-      })()
+        })
+        .catch(function () {
+          return caches
+            .match(request)
+            .then(function (response) {
+              return response || serveOfflineImage(request);
+            })
+            .catch(function () {
+              return serveOfflineImage(request);
+            });
+        })
     );
   });
 })();
