@@ -112,14 +112,14 @@ document.addEventListener("DOMContentLoaded", function () {
       x: 0,
       y: -80,
       opacity: 0,
-      scale: 1.2,
+      scale: 1,
       backgroundColor: "#c62129",
       color: "#fff",
       duration: 1.2,
       ease: "bounce.out",
       scrollTrigger: {
         trigger: nextGig,
-        start: "top 90%",
+        start: "top 70%",
         toggleActions: "play none none none",
       },
       onComplete: () => {
@@ -155,7 +155,7 @@ document.addEventListener("DOMContentLoaded", function () {
       stagger: 0.2,
       scrollTrigger: {
         trigger: otherGigs[0].parentElement,
-        start: "top 90%",
+        start: "top 70%",
         toggleActions: "play none none none",
       },
     }
