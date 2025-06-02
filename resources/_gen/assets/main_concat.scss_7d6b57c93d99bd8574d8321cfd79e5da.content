@@ -1226,6 +1226,5 @@ footer {
   transition: background 0.3s, color 0.3s;
   border-radius: 8px;
   margin-bottom: 1rem;
-  font-weight: bold;
   font-size: 1.1em;
   width: 100%; }

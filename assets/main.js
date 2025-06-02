@@ -135,21 +135,23 @@ document.addEventListener("DOMContentLoaded", function() {
   const otherGigs = Array.from(document.querySelectorAll("ul>li.gig-item, ul>li.ns-notpassed, ul>li.ns-strikethrough"))
     .filter(item => !item.classList.contains("ns-nextgig"));
 
-  if (otherGigs.length) {
-    gsap.from(otherGigs, {
-      x: () => gsap.utils.random(-300, 300),
-      y: () => gsap.utils.random(-200, 200),
-      rotate: () => gsap.utils.random(-360, 360),
-      opacity: 0,
-      duration: 1.1,
-      ease: "back.out(1.7)",
-      stagger: 0.18,
-      scrollTrigger: {
-        trigger: otherGigs[0].parentElement,
-        start: "top 90%",
-        toggleActions: "play none none none"
-      }
-    });
-  }
+if (otherGigs.length) {
+  gsap.from(otherGigs, {
+    xPercent: () => gsap.utils.random(-15, 15), // use percent to avoid pushing layout
+    y: () => gsap.utils.random(-30, 30),       // smaller range for visual interest
+    rotate: () => gsap.utils.random(-15, 15),
+    scale: () => gsap.utils.random(0.95, 1.05),
+    opacity: 0,
+    duration: 1.2,
+    ease: "back.out(1.7)",
+    stagger: 0.18,
+    scrollTrigger: {
+      trigger: otherGigs[0].parentElement,
+      start: "top 90%",
+      toggleActions: "play none none none"
+    }
+  });
+}
+
 });
 
