@@ -1196,10 +1196,9 @@ footer {
   padding: 1.2rem 1.2rem;
   color: #fff;
   text-decoration: none;
+  letter-spacing: 0.1em;
   font-family: "Sedgwick Ave Display", cursive;
-  font-weight: 700;
-  font-size: 1.6rem;
-  letter-spacing: 0.12em;
+  font-size: 1.4em;
   border-radius: 8px;
   position: relative;
   transition: color 0.2s, background 0.2s, transform 0.2s, box-shadow 0.2s;
