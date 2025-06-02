@@ -7,7 +7,7 @@ if (nextgig) {
 window.addEventListener("load", () => {
   quicklink.listen({
     origins: !0,
-    priority: !0
+    priority: !0,
   });
 });
 
@@ -93,15 +93,16 @@ window.addEventListener("load", function () {
   init();
 });
 
-document.addEventListener("DOMContentLoaded", function() {
-  // Spin the logo on load
+document.addEventListener("DOMContentLoaded", function () {
+  // Spin and grow the logo on load
   gsap.fromTo(
     "#site-logo",
-    { rotate: 0 },
-    { rotate: 360, duration: 1.5, ease: "power2.inOut" }
+    { rotate: 0, scale: 0, opacity: 0 },
+    { rotate: 360, scale: 1, opacity: 1, duration: 1.5, ease: "power2.inOut" }
   );
 
-  if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") return;
+  if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined")
+    return;
   gsap.registerPlugin(ScrollTrigger);
 
   // Funky effect for the next upcoming gig
@@ -119,40 +120,54 @@ document.addEventListener("DOMContentLoaded", function() {
       scrollTrigger: {
         trigger: nextGig,
         start: "top 90%",
-        toggleActions: "play none none none"
+        toggleActions: "play none none none",
       },
       onComplete: () => {
         gsap.to(nextGig, {
           backgroundColor: "",
           color: "",
-          duration: 0.5
+          duration: 0.5,
         });
-      }
+      },
     });
   }
 
   // Fly-in, spinning, for all other gigs except the next gig, line by line as you scroll
-  const otherGigs = Array.from(document.querySelectorAll("ul>li.gig-item, ul>li.ns-notpassed, ul>li.ns-strikethrough"))
-    .filter(item => !item.classList.contains("ns-nextgig"));
+  const otherGigs = Array.from(
+    document.querySelectorAll(
+      "ul>li.gig-item, ul>li.ns-notpassed, ul>li.ns-strikethrough"
+    )
+  ).filter((item) => !item.classList.contains("ns-nextgig"));
 
-gsap.fromTo(otherGigs, {
-  y: -200,
-  opacity: 0,
-  filter: "blur(8px)"
-}, {
-  y: 0,
-  opacity: 1,
-  filter: "blur(0px)",
-  duration: 1,
-  ease: "power3.out",
-  stagger: 0.2,
-  scrollTrigger: {
-    trigger: otherGigs[0].parentElement,
-    start: "top 90%",
-    toggleActions: "play none none none"
-  }
+  gsap.fromTo(
+    otherGigs,
+    {
+      y: -200,
+      opacity: 0,
+      filter: "blur(8px)",
+    },
+    {
+      y: 0,
+      opacity: 1,
+      filter: "blur(0px)",
+      duration: 1,
+      ease: "power3.out",
+      stagger: 0.2,
+      scrollTrigger: {
+        trigger: otherGigs[0].parentElement,
+        start: "top 90%",
+        toggleActions: "play none none none",
+      },
+    }
+  );
 });
 
 
-});
-
+    // Flip every 3 seconds (rotateY)
+    gsap.to(".ns-nextgig", {
+      rotateY: 360,
+      duration: 3,
+      repeat: -1,
+      ease: "power2.inOut",
+      repeatDelay: 2
+    });

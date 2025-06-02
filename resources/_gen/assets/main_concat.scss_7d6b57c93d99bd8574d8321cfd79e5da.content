@@ -964,6 +964,10 @@ input[type="submit"] {
   text-align: center;
   z-index: 10; }
 
+.ns-social
+a {
+  text-decoration: none; }
+
 .ns-contact-shell,
 .ns-setlist-shell,
 .ns-404 {

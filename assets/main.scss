@@ -17,6 +17,7 @@ html {
   color: $ooob-white;
   text-size-adjust: none;
   font-family: "Roboto", Arial, Helvetica, sans-serif;
+
 }
 
 a {
@@ -296,7 +297,12 @@ input[type="submit"] {
   text-align: center;
   z-index: 10;
 }
+.ns-social
+  a {
+    text-decoration: none;
+  }
 
+  
 // =======================
 // Contact & Setlist Sections
 // =======================
