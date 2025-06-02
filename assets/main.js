@@ -93,7 +93,77 @@ window.addEventListener("load", function () {
   init();
 });
 
+// Liquid Morph Reveal Animation - Scroll Triggered
+function animateLiquidMorphThumbnails(thumbnails) {
+    // Animate to final state with elastic easing
+    gsap.to(thumbnails, {
+        scaleX: 1,
+        scaleY: 1,
+        opacity: 1,
+        borderRadius: "15px",
+        duration: 1.5,
+        ease: "elastic.out(1, 0.5)",
+        stagger: {
+            amount: 0.6,
+            from: "center"
+        }
+    });
+
+    // Optional: Add subtle floating animation after reveal
+    gsap.to(thumbnails, {
+        y: [0, -10, 0],
+        duration: 2,
+        ease: "sine.inOut",
+        repeat: -1,
+        stagger: 0.2,
+        delay: 1.5
+    });
+}
+
+// Set up scroll-triggered animation
+function initScrollTriggerThumbnails() {
+    const thumbnails = document.querySelectorAll('.video-thumbnail');
+    
+    // Set initial state for all thumbnails
+    gsap.set(thumbnails, { 
+        scaleX: 0.1,
+        scaleY: 2,
+        opacity: 0,
+        borderRadius: "50%"
+    });
+
+    // Create observer for each thumbnail
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // Get all thumbnails in the same container as the visible one
+                const container = entry.target.closest('.thumbnails-container, .thumbnails-grid, section, div');
+                const containerThumbnails = container ? 
+                    container.querySelectorAll('.video-thumbnail') : 
+                    [entry.target];
+
+                // Animate the group
+                animateLiquidMorphThumbnails(containerThumbnails);
+                
+                // Unobserve all thumbnails in this container to prevent re-triggering
+                containerThumbnails.forEach(thumb => observer.unobserve(thumb));
+            }
+        });
+    }, {
+        threshold: 0.3,
+        rootMargin: '0px 0px -50px 0px'
+    });
+
+    // Observe each thumbnail
+    thumbnails.forEach(thumbnail => {
+        observer.observe(thumbnail);
+    });
+}
+
 document.addEventListener("DOMContentLoaded", function () {
+  // Initialize thumbnail animations
+  initScrollTriggerThumbnails();
+
   // Spin and grow the logo on load
   gsap.fromTo(
     "#site-logo",
@@ -160,14 +230,13 @@ document.addEventListener("DOMContentLoaded", function () {
       },
     }
   );
+
+  // Flip every 3 seconds (rotateY)
+  gsap.to(".ns-nextgig", {
+    rotateY: 360,
+    duration: 3,
+    repeat: -1,
+    ease: "power2.inOut",
+    repeatDelay: 2,
+  });
 });
-
-
-    // Flip every 3 seconds (rotateY)
-    gsap.to(".ns-nextgig", {
-      rotateY: 360,
-      duration: 3,
-      repeat: -1,
-      ease: "power2.inOut",
-      repeatDelay: 2
-    });
