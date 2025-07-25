@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const version = "NS12072025V1::CacheFirstSafe";
+  const version = "NS25072025V1::CacheFirstSafe";
   const offlineUrl = "/offline.html";
 
   async function updateStaticCache() {

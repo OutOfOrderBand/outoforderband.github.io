@@ -6,34 +6,27 @@
   </a>
 </div>
 <div class="ns-gigs">
-  <h1 class="ns-h1">All Gigs</h1>
+  <h1 class="ns-h1">Upcoming Gigs</h1>
   {{ $dateformat := now.Format "2006-01-02" }}
-  <section aria-label="All gigs">
-    <ul>
-      {{ range sort $.Site.Data.gigs "Date" "desc" }}
-        {{ if .Date }}
-          {{ if gt .Date $dateformat }}
-            <li class="ns-notpassed gig-item">
-              {{ dateFormat "Monday, Jan 2, 2006" .Date }}
-              {{ if and .URL .Location }}
-                <a href="{{ .URL }}" target="_blank">{{ .Location }}</a>
-              {{ else }}
-                {{ .Location | default "TBA" }}
-              {{ end }}
-            </li>
+  <section aria-label="Upcoming Gigs">
+<ul>
+  {{ $now := now }}
+  {{ range sort $.Site.Data.gigs "Date" "asc" }}
+    {{ if .Date }}
+      {{ $gigDate := time .Date }}
+      {{ if ge $gigDate $now }}
+        <li class="ns-notpassed gig-item">
+          {{ dateFormat "Monday, Jan 2, 2006" .Date }}
+          {{ if and .URL .Location }}
+            <a href="{{ .URL }}" target="_blank">{{ .Location }}</a>
           {{ else }}
-            <li class="ns-strikethrough gig-item">
-              {{ dateFormat "Monday, Jan 2, 2006" .Date }}
-              {{ if and .URL .Location }}
-                <a href="{{ .URL }}" target="_blank">{{ .Location }}</a>
-              {{ else }}
-                {{ .Location | default "TBA" }}
-              {{ end }}
-            </li>
+            {{ .Location | default "TBA" }}
           {{ end }}
-        {{ end }}
+        </li>
       {{ end }}
-    </ul>
+    {{ end }}
+  {{ end }}
+</ul>
   </section>
 </div>
 {{ end }}

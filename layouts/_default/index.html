@@ -33,23 +33,23 @@
   <br />
 
   <h1 class="ns-h1">Upcoming Gigs</h1>
-  <ul>
-    {{ $dateformat := now.Format "2006-01-02" }}
-    {{ range sort site.Data.gigs "Date" "desc" }}
-      {{ if gt .Date "2019-01-01" }}
-        {{ if gt .Date $dateformat }}
-          <li class="ns-notpassed gig-item">
-            {{ dateFormat "Monday, Jan 2, 2006" .Date }}
+<ul>
+  {{ $now := now }}
+  {{ range sort $.Site.Data.gigs "Date" "asc" }}
+    {{ if .Date }}
+      {{ $gigDate := time .Date }}
+      {{ if ge $gigDate $now }}
+        <li class="ns-notpassed gig-item">
+          {{ dateFormat "Monday, Jan 2, 2006" .Date }}
+          {{ if and .URL .Location }}
             <a href="{{ .URL }}" target="_blank">{{ .Location }}</a>
-          </li>
-        {{ else }}
-          <li class="ns-strikethrough gig-item">
-            {{ dateFormat "Monday, Jan 2, 2006" .Date }}
-            <a href="{{ .URL }}" target="_blank">{{ .Location }}</a>
-          </li>
-        {{ end }}
+          {{ else }}
+            {{ .Location | default "TBA" }}
+          {{ end }}
+        </li>
       {{ end }}
     {{ end }}
-  </ul>
+  {{ end }}
+</ul>
 </div>
 {{ end }}
