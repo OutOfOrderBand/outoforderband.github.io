@@ -1,9 +1,15 @@
 <!doctype html>
 <html lang="en">
 <head>
+
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>2026 Fri/Sat/Sun – Unavailability</title>
+
+<!-- Prevent all caching -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <style>
   :root{
     --bg:#0f172a; --panel:#111827; --card:#1f2937; --muted:#9ca3af; --text:#e5e7eb;
@@ -325,15 +331,15 @@ Paste your JSON below into DATA (or replace it entirely). It will load on page s
 const DATA = {
   "names": ["Clive","Darren","Martin","Matt"],
   "unavailableDates": {
-    "Clive":  ["2026-02-28","2026-03-14","2026-10-03","2026-12-25"],
+    "Clive":["2026-02-28","2026-03-14","2026-10-03","2026-12-25"],
 
-    "Darren":   ["2026-02-28","2026-03-14","2026-10-03","2026-12-25"],
+    "Darren":["2026-02-28","2026-03-14","2026-10-03","2026-12-25"],
 
-    "Martin": ["2026-01-30","2026-02-06","2026-02-07","2026-02-08",
+    "Martin":["2026-01-30","2026-02-06","2026-02-07","2026-02-08",
     "2026-02-21","2026-02-27","2026-02-28","2026-03-14","2026-04-03","2026-05-22",
     "2026-06-06","2026-07-11","2026-09-04","2026-10-03","2026-12-25"],
-    
-    "Matt":    ["2026-02-28","2026-05-02","2026-05-03","2026-03-07","2026-08-30","2026-03-14","2026-10-03","2026-10-03","2026-12-25"]
+
+    "Matt":["2026-02-28","2026-05-02","2026-05-03","2026-03-07","2026-08-30","2026-03-14","2026-10-03","2026-10-03","2026-12-25"]
   }
 };
 
