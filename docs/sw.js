@@ -1,12 +1,14 @@
 (() => {
   "use strict";
 
-  const version = "NS11092025V9::CacheFirstSafe";
+  const version = "NS11092025V12::CacheFirstSafe";
   const offlineUrl = "/offline.html";
+  const offlineImage = "/offline.png"; // <-- add this to your precache
 
   async function updateStaticCache() {
     const cache = await caches.open(version);
-    return cache.addAll([offlineUrl, "/"]);
+    // You may want to remove "/" if it changes often and shouldn't be cached
+    return cache.addAll([offlineUrl, offlineImage, "/"]);
   }
 
   async function addToCache(request, response) {
@@ -16,14 +18,14 @@
       (response.type !== "basic" && response.type !== "opaque")
     )
       return;
-    
+
     // Never cache Dates.html
-    if (request.url.includes('Dates.html')) {
+    if (request.url.includes("Dates.html")) {
       return;
     }
-    
+
     const cache = await caches.open(version);
-    cache.put(request, response.clone());
+    await cache.put(request, response.clone());
   }
 
   self.addEventListener("install", (event) => {
@@ -44,20 +46,22 @@
     self.clients.claim();
   });
 
-  function serveOfflineImage(request) {
-    // Optionally, serve a fallback image for image requests
+  function serveOfflineFallback(request) {
     if (request.destination === "image") {
-      // You can add a fallback image to your cache and return it here
-      // return caches.match('/offline-image.png');
+      return caches.match(offlineImage);
     }
-    return caches.match(offlineUrl);
+    if (request.destination === "document") {
+      return caches.match(offlineUrl);
+    }
+    // For CSS/JS/etc., just fail silently instead of serving HTML
+    return undefined;
   }
 
   self.addEventListener("fetch", (event) => {
     const request = event.request;
 
     // Never cache Dates.html - always fetch from network
-    if (request.url.includes('Dates.html')) {
+    if (request.url.includes("Dates.html")) {
       event.respondWith(
         fetch(request).catch(() => caches.match(offlineUrl))
       );
@@ -78,7 +82,7 @@
         (async () => {
           try {
             const response = await fetch(request);
-            addToCache(request, response);
+            await addToCache(request, response);
             return response;
           } catch {
             const cached = await caches.match(request);
@@ -97,10 +101,10 @@
           if (cached) return cached;
           try {
             const response = await fetch(request);
-            addToCache(request, response);
-            return response || serveOfflineImage(request);
+            await addToCache(request, response);
+            return response || serveOfflineFallback(request);
           } catch {
-            return serveOfflineImage(request);
+            return serveOfflineFallback(request);
           }
         })()
       );
@@ -112,11 +116,11 @@
       (async () => {
         try {
           const response = await fetch(request);
-          addToCache(request, response);
+          await addToCache(request, response);
           return response;
         } catch {
           const cached = await caches.match(request);
-          return cached || serveOfflineImage(request);
+          return cached || serveOfflineFallback(request);
         }
       })()
     );
