@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>2026 Fri/Sat/Sun – Unavailability</title>
+<style>
+  :root{
+    --bg:#0f172a; --panel:#111827; --card:#1f2937; --muted:#9ca3af; --text:#e5e7eb;
+    --border:#374151; --danger:#ef4444; --ok:#22c55e; --radius:12px;
+  }
+
+  /* Ensure padding/borders don’t cause overflow surprises */
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html,body{
+    background:var(--bg); color:var(--text);
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    margin:0;
+  }
+
+  header{
+    padding:14px clamp(12px,3vw,24px);
+    border-bottom:1px solid var(--border);
+    background:#0b1222;
+  }
+  header h1{ margin:0; font-size:1.2rem; font-weight:600; }
+  header .sub{ color:var(--muted); font-size:.9rem; margin-top:4px; }
+
+  main{ padding:12px clamp(12px,3vw,24px) 40px; }
+
+  .month{
+    margin-bottom:22px; border:1px solid var(--border); border-radius:var(--radius);
+    background:var(--panel); overflow:hidden;
+  }
+  .month h2{
+    margin:0; padding:12px 14px; font-size:1rem; font-weight:600;
+    border-bottom:1px solid var(--border); background:#0b1222;
+  }
+
+  .table-wrap{ overflow-x:auto; } /* Desktop/tablet can scroll if the window is very narrow */
+
+  /* ----- Desktop/Tablet table (no sticky header) ----- */
+  .grid{
+    width:100%; border-collapse:collapse; min-width:600px;
+  }
+  .grid thead th{
+    background:#0b1222;
+    border-bottom:1px solid var(--border);
+    padding:10px 8px; font-weight:600;
+  }
+  .grid thead th.date-head{ text-align:left; }
+  .grid thead th.name-head{ text-align:center; } /* Center names on non-mobile */
+
+  .grid tbody td, .grid thead th{
+    border-bottom:1px solid var(--border);
+  }
+  .grid tbody td{
+    padding:8px; vertical-align:middle; text-align:center;
+  }
+
+  .datecell{
+    display:flex; align-items:center; gap:10px; justify-content:flex-start;
+  }
+  .dow{
+    color:var(--muted); width:3.2rem; text-transform:uppercase;
+    letter-spacing:.05em; font-size:.75rem; text-align:left;
+  }
+  .dtx{ font-weight:500; }
+
+  /* Status cells */
+  .cell-bad{
+    background:rgba(239,68,68,0.16);
+    color:#fff; font-weight:700;
+  }
+  .cell-ok{
+    background:rgba(34,197,94,0.15);
+    color:var(--ok); font-weight:700;
+  }
+
+  .mark{
+    font-size:1rem; line-height:1; display:inline-block;
+  }
+
+  /* ----- Mobile cards (<600px) ----- */
+  @media (max-width: 599.98px){
+    /* Kill any chance of horizontal scroll on the page */
+    html, body { overflow-x: hidden; }
+
+    /* The wrapper should not try to create its own horizontal scroll */
+    .table-wrap { overflow-x: visible; }
+
+    /* Table -> stacked cards; remove the desktop min-width constraint */
+    .grid, .grid thead, .grid tbody, .grid th, .grid td, .grid tr{ display:block; }
+    .grid { min-width: 0; width: 100%; }
+    .grid thead{
+      position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);
+    }
+
+    .grid tr{
+      margin:12px 0; /* no side margins to avoid accidental overflow */
+      border:1px solid var(--border);
+      border-radius:10px; background:var(--card);
+    }
+
+    .grid td.date{
+      border-bottom:1px solid var(--border);
+      padding:10px 12px; text-align:left;
+    }
+    .datecell .dow{ width:auto; font-size:.72rem; letter-spacing:.06em; }
+    .datecell .dtx{ font-size:1rem; }
+
+    .grid td.person{
+      border:none; border-top:1px solid var(--border);
+      padding:10px 12px;
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      text-align:right;
+      min-width: 0; /* allow flex children to shrink */
+    }
+    .grid td.person:first-of-type{ border-top:1px solid var(--border); }
+
+    /* Let the name label wrap if needed, never causing horizontal scroll */
+    .grid td.person::before{
+      content:attr(data-label);
+      color:var(--muted); font-weight:600;
+      margin-right:12px; text-align:left;
+      flex: 1 1 auto; min-width:0; white-space:normal; word-break: break-word;
+    }
+
+    /* Make ticks/crosses a touch bigger on mobile; don't stretch */
+    .mark{ font-size:1.15rem; flex: 0 0 auto; }
+  }
+
+  /* Print */
+  @media print{
+    header{ display:none !important; }
+    .month{ break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>2026 Friday/Saturday/Sunday – Unavailability</h1>
+  <div class="sub">Green ✓ = free, Red X = can't make it. (Auto‑loaded)</div>
+</header>
+
+<main>
+  <div id="calendar"></div>
+</main>
+
+<script>
+/* ========= Utilities ========= */
+const YEAR = 2026;
+const DOW    = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const DEFAULT_NAMES = ["Person A","Person B","Person C","Person D"];
+
+/* Compute Fri/Sat/Sun dates in YEAR */
+function weekendDates(year){
+  const out=[], d=new Date(year,0,1);
+  while(d.getFullYear()===year){
+    const g=d.getDay(); if(g===5||g===6||g===0) out.push(new Date(d));
+    d.setDate(d.getDate()+1);
+  }
+  return out;
+}
+function fmtDate(d){
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+
+/* ========= State ========= */
+const allDates = weekendDates(YEAR).map(fmtDate);
+let NAMES = [...DEFAULT_NAMES];
+// UNAVAIL: { "YYYY-MM-DD": { "Name": true } }
+let UNAVAIL = Object.fromEntries(allDates.map(dt => [dt, {}]));
+
+/* ========= Rendering ========= */
+function render(){
+  const root = document.getElementById("calendar");
+  root.innerHTML = "";
+
+  const byMonth = new Map();
+  allDates.forEach(dt => {
+    const m = +dt.split("-")[1] - 1;
+    if(!byMonth.has(m)) byMonth.set(m, []);
+    byMonth.get(m).push(dt);
+  });
+
+  [...byMonth.keys()].sort((a,b)=>a-b).forEach(mi => {
+    const sec = document.createElement("section");
+    sec.className = "month";
+
+    const h2 = document.createElement("h2");
+    h2.textContent = `${MONTHS[mi]} ${YEAR}`;
+    sec.appendChild(h2);
+
+    const wrap = document.createElement("div");
+    wrap.className = "table-wrap";
+
+    const table = document.createElement("table");
+    table.className = "grid";
+
+    // Head
+    const thead = document.createElement("thead");
+    const thr = document.createElement("tr");
+    const thDate = document.createElement("th");
+    thDate.textContent = "Date";
+    thDate.className = "date-head";
+    thr.appendChild(thDate);
+    NAMES.forEach(n => {
+      const th = document.createElement("th");
+      th.textContent = n;
+      th.className = "name-head";
+      thr.appendChild(th);
+    });
+    thead.appendChild(thr);
+    table.appendChild(thead);
+
+    // Body
+    const tbody = document.createElement("tbody");
+    byMonth.get(mi).forEach(dt => {
+      const [y,m,d] = dt.split("-").map(Number);
+      const dd = new Date(y, m-1, d);
+
+      const tr = document.createElement("tr");
+
+      // Date cell
+      const td0 = document.createElement("td");
+      td0.className = "date";
+      const wrapDate = document.createElement("div");
+      wrapDate.className = "datecell";
+      const dow = document.createElement("span");
+      dow.className = "dow"; dow.textContent = DOW[dd.getDay()];
+      const dtx = document.createElement("span");
+      dtx.className = "dtx"; dtx.textContent = `${String(d).padStart(2,"0")} ${MONTHS[m-1].slice(0,3)} ${y}`;
+      wrapDate.append(dow, dtx);
+      td0.appendChild(wrapDate);
+      tr.appendChild(td0);
+
+      // People cells
+      NAMES.forEach(name => {
+        const td = document.createElement("td");
+        td.className = "person";
+        td.dataset.label = name;
+        const isBad = !!(UNAVAIL[dt] && UNAVAIL[dt][name]);
+        if(isBad){
+          td.classList.add("cell-bad");
+          td.innerHTML = '<span class="mark">X</span>';        // Red X = can’t make it
+          td.setAttribute("aria-label", `${name} is unavailable on ${dt}`);
+        } else {
+          td.classList.add("cell-ok");
+          td.innerHTML = '<span class="mark">✓</span>';        // Green ✓ = free
+          td.setAttribute("aria-label", `${name} is available on ${dt}`);
+        }
+        tr.appendChild(td);
+      });
+
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+
+    wrap.appendChild(table);
+    sec.appendChild(wrap);
+    root.appendChild(sec);
+  });
+}
+
+/* ========= Loaders =========
+Accepted JSON formats:
+
+1) Per-person lists (preferred):
+{
+  "names": ["Clive","Neal","Samuel","Pat"],
+  "unavailableDates": { "Clive": ["2026-01-02"], "Neal": ["2026-03-14"] }
+}
+(also accepts "busyDates" instead of "unavailableDates")
+
+2) By date with false = can't make it:
+{
+  "names": ["Clive","Neal","Samuel","Pat"],
+  "availability": { "2026-01-02": { "Clive": false }, "2026-01-03": { "Neal": false } }
+}
+*/
+function loadData(obj){
+  // Names: exactly four columns
+  const names = Array.isArray(obj?.names) && obj.names.length ? obj.names.slice(0,4) : [...DEFAULT_NAMES];
+  while(names.length < 4) names.push(`Person ${String.fromCharCode(65 + names.length)}`);
+  if(names.length > 4) names.length = 4;
+  NAMES = names;
+
+  // Reset UNAVAIL map
+  UNAVAIL = Object.fromEntries(allDates.map(dt => [dt, {}]));
+
+  // (a) Per-person lists
+  const listKeys = ["unavailableDates","busyDates"];
+  for(const key of listKeys){
+    if(obj && obj[key] && typeof obj[key] === "object"){
+      for(const [name, dates] of Object.entries(obj[key])){
+        if(!NAMES.includes(name) || !Array.isArray(dates)) continue;
+        for(const dt of dates){
+          if(UNAVAIL[dt]) UNAVAIL[dt][name] = true; // only weekends in 2026
+        }
+      }
+    }
+  }
+
+  // (b) By-date map (false => unavailable)
+  if(obj && obj.availability && typeof obj.availability === "object"){
+    for(const [dt, row] of Object.entries(obj.availability)){
+      if(!UNAVAIL[dt]) continue;
+      for(const name of NAMES){
+        if(row && Object.prototype.hasOwnProperty.call(row, name) && row[name] === false){
+          UNAVAIL[dt][name] = true;
+        }
+      }
+    }
+  }
+
+  render();
+}
+
+/* ========= AUTO-LOAD =========
+Paste your JSON below into DATA (or replace it entirely). It will load on page start.
+*/
+const DATA = {
+  "names": ["Clive","Neal","Samuel","Pat"],
+  "unavailableDates": {
+    "Clive":  ["2026-01-02","2026-02-06","2026-07-04"],
+    "Neal":   ["2026-01-03","2026-03-14"],
+    "Samuel": ["2026-01-04","2026-02-14"],
+    "Pat":    ["2026-03-14","2026-12-25"]
+  }
+};
+
+loadData(DATA);
+</script>
+</body>
+</html>
