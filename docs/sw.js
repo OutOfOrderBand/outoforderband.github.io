@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const version = "NS11092025V6::CacheFirstSafe";
+  const version = "NS11092025V8::CacheFirstSafe";
   const offlineUrl = "/offline.html";
 
   async function updateStaticCache() {
@@ -16,6 +16,12 @@
       (response.type !== "basic" && response.type !== "opaque")
     )
       return;
+    
+    // Never cache Dates.html
+    if (request.url.includes('Dates.html')) {
+      return;
+    }
+    
     const cache = await caches.open(version);
     cache.put(request, response.clone());
   }
@@ -49,6 +55,14 @@
 
   self.addEventListener("fetch", (event) => {
     const request = event.request;
+
+    // Never cache Dates.html - always fetch from network
+    if (request.url.includes('Dates.html')) {
+      event.respondWith(
+        fetch(request).catch(() => caches.match(offlineUrl))
+      );
+      return;
+    }
 
     // Always fetch non-GET requests from the network
     if (request.method !== "GET" || request.url.match(/\/browserLink/gi)) {
