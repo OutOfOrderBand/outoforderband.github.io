@@ -29,20 +29,27 @@ if ($html -match 'const\s+DATA\s*=\s*(\{[\s\S]*?\});') {
 # ====== GUI FORM ======
 $form = New-Object System.Windows.Forms.Form
 $form.Text = "Add Unavailable Dates"
-$form.Size = New-Object System.Drawing.Size(370, 250)
+$form.Size = New-Object System.Drawing.Size(370, 280)
 $form.StartPosition = "CenterScreen"
 $form.FormBorderStyle = "FixedDialog"
 $form.MaximizeBox = $false
 $form.MinimizeBox = $false
 
+# "Apply to All" checkbox
+$chkApplyAll = New-Object System.Windows.Forms.CheckBox
+$chkApplyAll.Text = "Apply to all people"
+$chkApplyAll.Location = New-Object System.Drawing.Point(20, 20)
+$chkApplyAll.Width = 150
+$form.Controls.Add($chkApplyAll)
+
 # Name label + dropdown
 $lblName = New-Object System.Windows.Forms.Label
 $lblName.Text = "Select Name:"
-$lblName.Location = New-Object System.Drawing.Point(20, 25)
+$lblName.Location = New-Object System.Drawing.Point(20, 55)
 $form.Controls.Add($lblName)
 
 $comboName = New-Object System.Windows.Forms.ComboBox
-$comboName.Location = New-Object System.Drawing.Point(150, 22)
+$comboName.Location = New-Object System.Drawing.Point(150, 52)
 $comboName.Width = 180
 $comboName.DropDownStyle = [System.Windows.Forms.ComboBoxStyle]::DropDownList
 $comboName.Items.AddRange($data.names)
@@ -51,27 +58,27 @@ $form.Controls.Add($comboName)
 # Start Date label + picker
 $lblStart = New-Object System.Windows.Forms.Label
 $lblStart.Text = "Start Date:"
-$lblStart.Location = New-Object System.Drawing.Point(20, 70)
+$lblStart.Location = New-Object System.Drawing.Point(20, 100)
 $form.Controls.Add($lblStart)
 
 $startPicker = New-Object System.Windows.Forms.DateTimePicker
 $startPicker.Format = [System.Windows.Forms.DateTimePickerFormat]::Short
-$startPicker.Location = New-Object System.Drawing.Point(150, 67)
+$startPicker.Location = New-Object System.Drawing.Point(150, 97)
 $startPicker.Width = 120
-$startPicker.ShowUpDown = $false  # Enables full calendar dropdown
+$startPicker.ShowUpDown = $false
 $form.Controls.Add($startPicker)
 
 # End Date label + picker
 $lblEnd = New-Object System.Windows.Forms.Label
 $lblEnd.Text = "End Date:"
-$lblEnd.Location = New-Object System.Drawing.Point(20, 110)
+$lblEnd.Location = New-Object System.Drawing.Point(20, 140)
 $form.Controls.Add($lblEnd)
 
 $endPicker = New-Object System.Windows.Forms.DateTimePicker
 $endPicker.Format = [System.Windows.Forms.DateTimePickerFormat]::Short
-$endPicker.Location = New-Object System.Drawing.Point(150, 107)
+$endPicker.Location = New-Object System.Drawing.Point(150, 137)
 $endPicker.Width = 120
-$endPicker.ShowUpDown = $false  # Enables calendar view
+$endPicker.ShowUpDown = $false
 $form.Controls.Add($endPicker)
 
 # Optional: Prevent end date before start date
@@ -79,16 +86,26 @@ $startPicker.Add_ValueChanged({
     $endPicker.MinDate = $startPicker.Value
 })
 
+# Toggle dropdown based on checkbox
+$chkApplyAll.Add_CheckedChanged({
+    if ($chkApplyAll.Checked) {
+        $comboName.Enabled = $false
+        $comboName.SelectedIndex = -1
+    } else {
+        $comboName.Enabled = $true
+    }
+})
+
 # Buttons
 $btnAdd = New-Object System.Windows.Forms.Button
 $btnAdd.Text = "Add Dates"
-$btnAdd.Location = New-Object System.Drawing.Point(60, 160)
+$btnAdd.Location = New-Object System.Drawing.Point(60, 190)
 $btnAdd.Width = 100
 $form.Controls.Add($btnAdd)
 
 $btnCancel = New-Object System.Windows.Forms.Button
 $btnCancel.Text = "Cancel"
-$btnCancel.Location = New-Object System.Drawing.Point(190, 160)
+$btnCancel.Location = New-Object System.Drawing.Point(190, 190)
 $btnCancel.Width = 100
 $form.Controls.Add($btnCancel)
 
@@ -96,13 +113,19 @@ $form.Controls.Add($btnCancel)
 $btnCancel.Add_Click({ $form.Close() })
 
 $btnAdd.Add_Click({
-    $name = $comboName.SelectedItem
     $start = $startPicker.Value.Date
     $end = $endPicker.Value.Date
 
-    if (-not $name) {
-        [System.Windows.Forms.MessageBox]::Show("Please select a name.", "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
-        return
+    # Determine which names to apply to
+    if ($chkApplyAll.Checked) {
+        $namesToUpdate = $data.names
+    } else {
+        $name = $comboName.SelectedItem
+        if (-not $name) {
+            [System.Windows.Forms.MessageBox]::Show("Please select a name or check 'Apply to all people'.", "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
+            return
+        }
+        $namesToUpdate = @($name)
     }
 
     if ($start -gt $end) {
@@ -116,10 +139,12 @@ $btnAdd.Add_Click({
         $dates += $d.ToString('yyyy-MM-dd')
     }
 
-    # Update data
-    $existing = $data.unavailableDates.$name
-    if (-not $existing) { $existing = @() }
-    $data.unavailableDates.$name = ($existing + $dates) | Sort-Object -Unique
+    # Update data for each selected name
+    foreach ($nameToUpdate in $namesToUpdate) {
+        $existing = $data.unavailableDates.$nameToUpdate
+        if (-not $existing) { $existing = @() }
+        $data.unavailableDates.$nameToUpdate = ($existing + $dates) | Sort-Object -Unique
+    }
 
     # Backup JSON
     $data | ConvertTo-Json -Depth 5 | Set-Content $jsonBackupPath -Encoding UTF8
@@ -136,7 +161,8 @@ $btnAdd.Add_Click({
     # Save updated HTML
     Set-Content -Path $htmlPath -Value $html -Encoding UTF8
 
-    [System.Windows.Forms.MessageBox]::Show("✅ Dates added for $name.`nHTML updated successfully.", "Success", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+    $peopleText = if ($chkApplyAll.Checked) { "all people" } else { $namesToUpdate[0] }
+    [System.Windows.Forms.MessageBox]::Show("✅ Dates added for $peopleText.`nHTML updated successfully.", "Success", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
     $form.Close()
 })
 
