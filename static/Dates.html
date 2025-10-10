@@ -2,15 +2,15 @@
 <html lang="en">
 
 <head>
-
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Fri/Sat/Sun – Unavailability</title>
+  <title>Fri/Sat/Sun – Availability</title>
 
   <!-- Prevent all caching -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
+
   <style>
     :root {
       --bg: #0f172a;
@@ -303,6 +303,7 @@
     let NAMES = [...DEFAULT_NAMES];
     let UNAVAIL = {};
 
+    // ✅ UPDATED FUNCTION BELOW
     function render() {
       const root = document.getElementById("calendar");
       root.innerHTML = "";
@@ -310,9 +311,19 @@
       const allDates = Object.keys(UNAVAIL).sort();
       if (allDates.length === 0) return;
 
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const currentMonth = now.getMonth() + 1;
+
+      // 👇 Filter out months before the current one
+      const filteredDates = allDates.filter(dt => {
+        const [y, m] = dt.split("-").map(Number);
+        return y > currentYear || (y === currentYear && m >= currentMonth);
+      });
+
       const byYear = new Map();
-      
-      allDates.forEach(dt => {
+
+      filteredDates.forEach(dt => {
         const [year, month] = dt.split("-").map(Number);
         if (!byYear.has(year)) byYear.set(year, new Map());
         const yearMap = byYear.get(year);
@@ -330,7 +341,7 @@
         yearSection.appendChild(yearHeader);
 
         const monthMap = byYear.get(year);
-        
+
         [...monthMap.keys()].sort((a, b) => a - b).forEach(month => {
           const sec = document.createElement("section");
           sec.className = "month";
@@ -417,7 +428,6 @@
       if (names.length > 4) names.length = 4;
       NAMES = names;
 
-      // Find min and max years from all dates in the data
       let minYear = Infinity;
       let maxYear = -Infinity;
 
@@ -447,11 +457,9 @@
         }
       }
 
-      // If no valid years found, default to current year
       if (minYear === Infinity) minYear = new Date().getFullYear();
       if (maxYear === -Infinity) maxYear = minYear;
 
-      // Generate all weekend dates for the year range
       const allWeekendDates = [];
       for (let year = minYear; year <= maxYear; year++) {
         allWeekendDates.push(...weekendDatesForYear(year));
@@ -459,7 +467,6 @@
 
       UNAVAIL = Object.fromEntries(allWeekendDates.map(d => [fmtDate(d), {}]));
 
-      // Populate unavailability data
       for (const key of listKeys) {
         if (obj && obj[key] && typeof obj[key] === "object") {
           for (const [name, dates] of Object.entries(obj[key])) {
