@@ -280,9 +280,15 @@
     const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const DEFAULT_NAMES = ["Clive", "Darren", "Martin", "Matt"];
 
-    function isWeekend(date) {
-      const day = date.getDay();
-      return day === 5 || day === 6 || day === 0;
+    function weekendDatesForYear(year) {
+      const out = [];
+      const d = new Date(year, 0, 1);
+      while (d.getFullYear() === year) {
+        const g = d.getDay();
+        if (g === 5 || g === 6 || g === 0) out.push(new Date(d));
+        d.setDate(d.getDate() + 1);
+      }
+      return out;
     }
 
     function fmtDate(d) {
@@ -301,7 +307,6 @@
       const root = document.getElementById("calendar");
       root.innerHTML = "";
 
-      // Get all dates and organize by year and month
       const allDates = Object.keys(UNAVAIL).sort();
       if (allDates.length === 0) return;
 
@@ -315,7 +320,6 @@
         yearMap.get(month).push(dt);
       });
 
-      // Render each year
       [...byYear.keys()].sort((a, b) => a - b).forEach(year => {
         const yearSection = document.createElement("div");
         yearSection.className = "year-section";
@@ -327,7 +331,6 @@
 
         const monthMap = byYear.get(year);
         
-        // Render each month in the year
         [...monthMap.keys()].sort((a, b) => a - b).forEach(month => {
           const sec = document.createElement("section");
           sec.className = "month";
@@ -342,7 +345,6 @@
           const table = document.createElement("table");
           table.className = "grid";
 
-          // Head
           const thead = document.createElement("thead");
           const thr = document.createElement("tr");
           const thDate = document.createElement("th");
@@ -358,7 +360,6 @@
           thead.appendChild(thr);
           table.appendChild(thead);
 
-          // Body
           const tbody = document.createElement("tbody");
           monthMap.get(month).forEach(dt => {
             const dd = parseDate(dt);
@@ -366,7 +367,6 @@
 
             const tr = document.createElement("tr");
 
-            // Date cell
             const td0 = document.createElement("td");
             td0.className = "date";
             const wrapDate = document.createElement("div");
@@ -381,7 +381,6 @@
             td0.appendChild(wrapDate);
             tr.appendChild(td0);
 
-            // People cells
             NAMES.forEach(name => {
               const td = document.createElement("td");
               td.className = "person";
@@ -413,16 +412,15 @@
     }
 
     function loadData(obj) {
-      // Names: exactly four columns
       const names = Array.isArray(obj?.names) && obj.names.length ? obj.names.slice(0, 4) : [...DEFAULT_NAMES];
       while (names.length < 4) names.push(`Person ${String.fromCharCode(65 + names.length)}`);
       if (names.length > 4) names.length = 4;
       NAMES = names;
 
-      // Collect all dates from the data
-      const allDateStrings = new Set();
+      // Find min and max years from all dates in the data
+      let minYear = Infinity;
+      let maxYear = -Infinity;
 
-      // (a) Per-person lists
       const listKeys = ["unavailableDates", "busyDates"];
       for (const key of listKeys) {
         if (obj && obj[key] && typeof obj[key] === "object") {
@@ -430,36 +428,38 @@
             if (!Array.isArray(dates)) continue;
             for (const dt of dates) {
               try {
-                const parsed = parseDate(dt);
-                if (isWeekend(parsed)) {
-                  allDateStrings.add(dt);
-                }
-              } catch (e) {
-                // Skip invalid dates
-              }
+                const year = parseInt(dt.split("-")[0]);
+                if (year < minYear) minYear = year;
+                if (year > maxYear) maxYear = year;
+              } catch (e) {}
             }
           }
         }
       }
 
-      // (b) By-date map
       if (obj && obj.availability && typeof obj.availability === "object") {
         for (const dt of Object.keys(obj.availability)) {
           try {
-            const parsed = parseDate(dt);
-            if (isWeekend(parsed)) {
-              allDateStrings.add(dt);
-            }
-          } catch (e) {
-            // Skip invalid dates
-          }
+            const year = parseInt(dt.split("-")[0]);
+            if (year < minYear) minYear = year;
+            if (year > maxYear) maxYear = year;
+          } catch (e) {}
         }
       }
 
-      // Initialize UNAVAIL for all weekend dates found
-      UNAVAIL = Object.fromEntries([...allDateStrings].map(dt => [dt, {}]));
+      // If no valid years found, default to current year
+      if (minYear === Infinity) minYear = new Date().getFullYear();
+      if (maxYear === -Infinity) maxYear = minYear;
 
-      // Now populate unavailability data
+      // Generate all weekend dates for the year range
+      const allWeekendDates = [];
+      for (let year = minYear; year <= maxYear; year++) {
+        allWeekendDates.push(...weekendDatesForYear(year));
+      }
+
+      UNAVAIL = Object.fromEntries(allWeekendDates.map(d => [fmtDate(d), {}]));
+
+      // Populate unavailability data
       for (const key of listKeys) {
         if (obj && obj[key] && typeof obj[key] === "object") {
           for (const [name, dates] of Object.entries(obj[key])) {
