@@ -1,0 +1,13 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Out Of Order Band//Gig//EN
+BEGIN:VEVENT
+UID:20190718-the-royal-oak-beaulieu-beer-festival-@outoforderband.co.uk
+DTSTAMP:20260117T113115Z
+DTSTART:20190718T230000Z
+DTEND:20190719T020000Z
+SUMMARY:Out Of Order Band – The Royal Oak Beaulieu (Beer Festival)
+DESCRIPTION:Live gig at The Royal Oak Beaulieu (Beer Festival)
+LOCATION:The Royal Oak Beaulieu (Beer Festival)
+END:VEVENT
+END:VCALENDAR

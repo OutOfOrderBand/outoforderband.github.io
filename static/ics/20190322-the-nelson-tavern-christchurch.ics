@@ -1,0 +1,13 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Out Of Order Band//Gig//EN
+BEGIN:VEVENT
+UID:20190322-the-nelson-tavern-christchurch@outoforderband.co.uk
+DTSTAMP:20260117T113115Z
+DTSTART:20190322T000000Z
+DTEND:20190322T030000Z
+SUMMARY:Out Of Order Band – The Nelson Tavern Christchurch
+DESCRIPTION:Live gig at The Nelson Tavern Christchurch
+LOCATION:The Nelson Tavern Christchurch
+END:VEVENT
+END:VCALENDAR

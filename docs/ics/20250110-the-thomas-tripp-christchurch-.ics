@@ -1,0 +1,13 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Out Of Order Band//Gig//EN
+BEGIN:VEVENT
+UID:20250110-the-thomas-tripp-christchurch-@outoforderband.co.uk
+DTSTAMP:20260117T113115Z
+DTSTART:20250110T000000Z
+DTEND:20250110T030000Z
+SUMMARY:Out Of Order Band – The Thomas Tripp (Christchurch)
+DESCRIPTION:Live gig at The Thomas Tripp (Christchurch)
+LOCATION:The Thomas Tripp (Christchurch)
+END:VEVENT
+END:VCALENDAR

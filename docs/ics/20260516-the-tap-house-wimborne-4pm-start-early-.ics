@@ -1,0 +1,13 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Out Of Order Band//Gig//EN
+BEGIN:VEVENT
+UID:20260516-the-tap-house-wimborne-4pm-start-early-@outoforderband.co.uk
+DTSTAMP:20260117T113115Z
+DTSTART:20260516T230000Z
+DTEND:20260517T020000Z
+SUMMARY:Out Of Order Band – The Tap House Wimborne 4pm start (early!)
+DESCRIPTION:Live gig at The Tap House Wimborne 4pm start (early!)
+LOCATION:The Tap House Wimborne 4pm start (early!)
+END:VEVENT
+END:VCALENDAR

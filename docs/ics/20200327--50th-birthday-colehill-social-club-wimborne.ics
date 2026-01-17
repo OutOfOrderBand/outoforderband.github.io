@@ -1,0 +1,13 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Out Of Order Band//Gig//EN
+BEGIN:VEVENT
+UID:20200327--50th-birthday-colehill-social-club-wimborne@outoforderband.co.uk
+DTSTAMP:20260117T113115Z
+DTSTART:20200327T000000Z
+DTEND:20200327T030000Z
+SUMMARY:Out Of Order Band – (50th Birthday) Colehill Social Club Wimborne
+DESCRIPTION:Live gig at (50th Birthday) Colehill Social Club Wimborne
+LOCATION:(50th Birthday) Colehill Social Club Wimborne
+END:VEVENT
+END:VCALENDAR

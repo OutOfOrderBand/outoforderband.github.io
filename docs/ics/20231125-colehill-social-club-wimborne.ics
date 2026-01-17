@@ -1,0 +1,13 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Out Of Order Band//Gig//EN
+BEGIN:VEVENT
+UID:20231125-colehill-social-club-wimborne@outoforderband.co.uk
+DTSTAMP:20260117T113115Z
+DTSTART:20231125T000000Z
+DTEND:20231125T030000Z
+SUMMARY:Out Of Order Band – Colehill Social Club Wimborne
+DESCRIPTION:Live gig at Colehill Social Club Wimborne
+LOCATION:Colehill Social Club Wimborne
+END:VEVENT
+END:VCALENDAR

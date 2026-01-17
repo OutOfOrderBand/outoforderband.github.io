@@ -1,0 +1,13 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Out Of Order Band//Gig//EN
+BEGIN:VEVENT
+UID:20250424-the-coach-and-horses-cadnam@outoforderband.co.uk
+DTSTAMP:20260117T113115Z
+DTSTART:20250424T230000Z
+DTEND:20250425T020000Z
+SUMMARY:Out Of Order Band – The Coach and Horses - Cadnam
+DESCRIPTION:Live gig at The Coach and Horses - Cadnam
+LOCATION:The Coach and Horses - Cadnam
+END:VEVENT
+END:VCALENDAR

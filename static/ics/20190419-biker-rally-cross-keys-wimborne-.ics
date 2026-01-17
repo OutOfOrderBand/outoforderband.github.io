@@ -1,0 +1,13 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Out Of Order Band//Gig//EN
+BEGIN:VEVENT
+UID:20190419-biker-rally-cross-keys-wimborne-@outoforderband.co.uk
+DTSTAMP:20260117T113115Z
+DTSTART:20190419T230000Z
+DTEND:20190420T020000Z
+SUMMARY:Out Of Order Band – Biker Rally (Cross Keys Wimborne)
+DESCRIPTION:Live gig at Biker Rally (Cross Keys Wimborne)
+LOCATION:Biker Rally (Cross Keys Wimborne)
+END:VEVENT
+END:VCALENDAR

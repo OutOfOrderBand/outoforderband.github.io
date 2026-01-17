@@ -1,0 +1,13 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Out Of Order Band//Gig//EN
+BEGIN:VEVENT
+UID:20230525-40th-birthday-private-gig@outoforderband.co.uk
+DTSTAMP:20260117T113115Z
+DTSTART:20230525T230000Z
+DTEND:20230526T020000Z
+SUMMARY:Out Of Order Band – 40th Birthday - Private Gig
+DESCRIPTION:Live gig at 40th Birthday - Private Gig
+LOCATION:40th Birthday - Private Gig
+END:VEVENT
+END:VCALENDAR

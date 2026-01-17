@@ -1,0 +1,13 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Out Of Order Band//Gig//EN
+BEGIN:VEVENT
+UID:20190509-the-butcher-s-dog-wimborne@outoforderband.co.uk
+DTSTAMP:20260117T113115Z
+DTSTART:20190509T230000Z
+DTEND:20190510T020000Z
+SUMMARY:Out Of Order Band – The Butcher's Dog Wimborne
+DESCRIPTION:Live gig at The Butcher's Dog Wimborne
+LOCATION:The Butcher's Dog Wimborne
+END:VEVENT
+END:VCALENDAR

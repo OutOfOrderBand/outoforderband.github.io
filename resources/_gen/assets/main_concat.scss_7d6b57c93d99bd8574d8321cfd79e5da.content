@@ -1231,3 +1231,6 @@ footer {
   margin-bottom: 1rem;
   font-size: 1.1em;
   width: 100%; }
+
+.calendar-link:hover {
+  text-decoration: none !important; }

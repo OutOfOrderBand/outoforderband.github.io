@@ -1,0 +1,13 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Out Of Order Band//Gig//EN
+BEGIN:VEVENT
+UID:20251206-the-rising-sun-wimborne-5pm-7pm-early-@outoforderband.co.uk
+DTSTAMP:20260117T113115Z
+DTSTART:20251206T000000Z
+DTEND:20251206T030000Z
+SUMMARY:Out Of Order Band – The Rising Sun Wimborne - 5pm-7pm (early!)
+DESCRIPTION:Live gig at The Rising Sun Wimborne - 5pm-7pm (early!)
+LOCATION:The Rising Sun Wimborne - 5pm-7pm (early!)
+END:VEVENT
+END:VCALENDAR

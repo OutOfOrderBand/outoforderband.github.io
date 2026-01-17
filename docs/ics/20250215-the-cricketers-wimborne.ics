@@ -1,0 +1,13 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Out Of Order Band//Gig//EN
+BEGIN:VEVENT
+UID:20250215-the-cricketers-wimborne@outoforderband.co.uk
+DTSTAMP:20260117T113115Z
+DTSTART:20250215T000000Z
+DTEND:20250215T030000Z
+SUMMARY:Out Of Order Band – The Cricketers Wimborne
+DESCRIPTION:Live gig at The Cricketers Wimborne
+LOCATION:The Cricketers Wimborne
+END:VEVENT
+END:VCALENDAR
