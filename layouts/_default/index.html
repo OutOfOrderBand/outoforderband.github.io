@@ -1,93 +1,55 @@
 {{ define "title" }} Out Of Order Band {{ end }}
-
 {{ define "main" }}
-
 <div class="speech-bubble">
   <a href="/contact">
     <h4>Click to get in touch!</h4>
   </a>
 </div>
-
 <div class="ns-gigs">
-
-  <!-- Videos -->
   <section class="gallery" aria-label="Band Videos">
     {{ range site.Data.frontpagevideos }}
-      <figure>
-        <a data-fancybox data-ratio="2" href="{{ .url }}">
-          <span class="video-thumbnail">
-            <div class="NSPlay" aria-label="Play video"></div>
-            <img
-              src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
-              data-src="https://img.youtube.com/vi/{{ .id }}/0.jpg"
-              alt="{{ .title }} video thumbnail"
-              loading="lazy"
-            />
-          </span>
-        </a>
-        <figcaption>{{ .title }}</figcaption>
-      </figure>
+    <figure>
+      <a data-fancybox data-ratio="2" href="{{ .url }}">
+        <span class="video-thumbnail">
+          <div class="NSPlay" aria-label="Play video"></div>
+          <img
+            src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+            data-src="https://img.youtube.com/vi/{{ .id }}/0.jpg"
+            alt="{{ .title }} video thumbnail"
+            loading="lazy"
+          />
+        </span>
+      </a>
+      <figcaption>{{ .title }}</figcaption>
+    </figure>
     {{ end }}
   </section>
-
   <br />
-
   <div class="ns-button">
     <a href="/videos">
       <h4><em>..more videos</em></h4>
     </a>
   </div>
-
   <br />
 
-  <!-- Upcoming Gigs -->
   <h1 class="ns-h1">Upcoming Gigs</h1>
-
-  <ul>
-    {{ $now := now }}
-
-    {{ range sort site.Data.gigs "Date" "asc" }}
-      {{ if .Date }}
-        {{ $gigDate := time .Date }}
-
-        {{ if ge $gigDate $now }}
-
-          {{ $slug := .Location | urlize }}
-          {{ $icsPath := printf "/ics/%s-%s.ics" ($gigDate.Format "20060102") $slug }}
-
-          <li class="ns-notpassed gig-item">
-
-            <!-- Date -->
-            {{ dateFormat "Monday, Jan 2, 2006" .Date }}
-
-            <!-- Location -->
-            {{ if and .URL .Location }}
-              <a href="{{ .URL }}" target="_blank" rel="noopener">{{ .Location }}</a>
-            {{ else }}
-              {{ .Location | default "TBA" }}
-            {{ end }}
-
-            <!-- Add to Calendar -->
-            <span class="add-to-calendar">
-              &nbsp;|&nbsp;
-              <a
-                href="{{ $icsPath }}"
-                download
-                class="calendar-link"
-                aria-label="Add to calendar"
-                title="Add to calendar"
-              >
-                📅
-              </a>
-            </span>
-
-          </li>
-
-        {{ end }}
+<ul>
+  {{ $now := now }}
+  {{ range sort $.Site.Data.gigs "Date" "asc" }}
+    {{ if .Date }}
+      {{ $gigDate := time .Date }}
+      {{ if ge $gigDate $now }}
+        <li class="ns-notpassed gig-item">
+          {{ dateFormat "Monday, Jan 2, 2006" .Date }}
+          {{ if and .URL .Location }}
+            <a href="{{ .URL }}" target="_blank">{{ .Location }}</a>
+          {{ else }}
+            {{ .Location | default "TBA" }}
+          {{ end }}
+        </li>
       {{ end }}
     {{ end }}
-  </ul>
-
+  {{ end }}
+</ul>
 </div>
-
 {{ end }}
