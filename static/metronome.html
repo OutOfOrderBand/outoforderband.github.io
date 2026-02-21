@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>METRO — Visual Metronome</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --fg: #f0ede8;
+    --accent: #ff3d00;
+    --dim: #222;
+    --mid: #555;
+    --safe-top:    env(safe-area-inset-top,    0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left:   env(safe-area-inset-left,   0px);
+    --safe-right:  env(safe-area-inset-right,  0px);
+  }
+
+  *, *::before, *::after {
+    margin: 0; padding: 0; box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'DM Mono', monospace;
+    min-height: 100dvh;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding:
+      calc(var(--safe-top)    + 0.75rem)
+      calc(var(--safe-right)  + 1rem)
+      calc(var(--safe-bottom) + 1rem)
+      calc(var(--safe-left)   + 1rem);
+  }
+
+  /* grain */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 100; opacity: 0.5;
+  }
+
+  /* flash */
+  .flash-overlay {
+    position: fixed; inset: 0;
+    background: var(--fg);
+    opacity: 0; pointer-events: none;
+    z-index: 50;
+    transition: opacity 0.03s;
+  }
+  .flash-overlay.on { opacity: 0.85; }
+
+  /* ── Main container ─────────────────────────────────── */
+  .container {
+    width: 100%;
+    max-width: 540px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(0.6rem, 2.5vw, 1rem);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Header row: title + start button ──────────────── */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .title-block { text-align: left; line-height: 1; }
+
+  .title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.8rem, 12vw, 6rem);
+    letter-spacing: 0.12em;
+    line-height: 0.85;
+    color: var(--fg);
+  }
+
+  .subtitle {
+    font-size: clamp(0.45rem, 1.6vw, 0.55rem);
+    letter-spacing: 0.45em;
+    color: var(--mid);
+    text-transform: uppercase;
+    margin-top: 0.2rem;
+  }
+
+  /* ── BIG start/stop button ──────────────────────────── */
+  #playBtn {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(1.6rem, 6vw, 2.8rem);
+    letter-spacing: 0.12em;
+    padding: 0;
+    width:  clamp(80px, 22vw, 130px);
+    height: clamp(80px, 22vw, 130px);
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    background: transparent;
+    color: var(--accent);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.15s, color 0.15s, transform 0.08s, box-shadow 0.15s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #playBtn:active        { transform: scale(0.94); }
+  #playBtn.running       { background: var(--accent); color: var(--bg); box-shadow: 0 0 30px rgba(255,61,0,0.5); }
+  #playBtn:hover:not(.running) { background: rgba(255,61,0,0.12); }
+
+  /* ── BPM number ─────────────────────────────────────── */
+  .bpm-block { text-align: center; }
+
+  .bpm-display {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(5rem, 24vw, 13rem);
+    line-height: 1;
+    color: var(--accent);
+    user-select: none;
+    transition: transform 0.05s, color 0.1s;
+    display: block;
+  }
+  .bpm-display.beat {
+    transform: scale(1.04);
+    text-shadow: 0 0 60px var(--accent);
+  }
+
+  .bpm-meta {
+    display: flex;
+    justify-content: center;
+    align-items: baseline;
+    gap: 1rem;
+    margin-top: 0.1rem;
+  }
+  .bpm-label, .tempo-name {
+    font-size: clamp(0.48rem, 1.7vw, 0.58rem);
+    letter-spacing: 0.4em;
+    color: var(--mid);
+    text-transform: uppercase;
+  }
+  .tempo-name { color: var(--fg); opacity: 0.4; }
+
+  /* ── Beat dots ──────────────────────────────────────── */
+  .beat-strip {
+    display: flex;
+    gap: clamp(0.4rem, 2vw, 0.7rem);
+    justify-content: center;
+  }
+  .beat-dot {
+    width: clamp(7px, 2.2vw, 10px);
+    height: clamp(7px, 2.2vw, 10px);
+    border-radius: 50%;
+    background: var(--dim);
+    transition: background 0.05s, transform 0.05s;
+  }
+  .beat-dot.active {
+    background: var(--accent);
+    transform: scale(1.6);
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  /* ── Slider ─────────────────────────────────────────── */
+  .slider-wrap { width: 100%; }
+
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 28px; /* tall hit area */
+    background: transparent;
+    outline: none;
+    cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-runnable-track {
+    height: 2px; background: var(--dim); border-radius: 1px;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 26px; height: 26px;
+    margin-top: -12px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(255,61,0,0.6);
+    transition: transform 0.1s;
+  }
+  input[type=range]::-webkit-slider-thumb:active { transform: scale(1.2); }
+  input[type=range]::-moz-range-track { height: 2px; background: var(--dim); }
+  input[type=range]::-moz-range-thumb {
+    width: 26px; height: 26px;
+    background: var(--accent); border: none; border-radius: 50%;
+    box-shadow: 0 0 10px rgba(255,61,0,0.6);
+  }
+
+  .range-labels {
+    display: flex; justify-content: space-between;
+    font-size: clamp(0.45rem, 1.5vw, 0.5rem);
+    letter-spacing: 0.2em; color: var(--mid);
+    margin-top: 0.1rem;
+  }
+
+  /* ── BPM input + tap row ────────────────────────────── */
+  .controls-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: stretch;
+  }
+
+  .bpm-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    border: 1px solid var(--dim);
+    padding: 0 0.7rem;
+    flex: 0 0 auto;
+  }
+  .bpm-input-label {
+    font-size: clamp(0.45rem, 1.5vw, 0.52rem);
+    letter-spacing: 0.3em;
+    color: var(--mid);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .bpm-input {
+    background: transparent;
+    border: none;
+    color: var(--fg);
+    font-family: 'DM Mono', monospace;
+    font-size: max(16px, 1rem);
+    text-align: center;
+    width: clamp(3.2rem, 12vw, 4rem);
+    outline: none;
+    min-height: 48px;
+    -moz-appearance: textfield;
+  }
+  .bpm-input::-webkit-inner-spin-button,
+  .bpm-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+  #tapBtn {
+    flex: 1;
+    font-family: 'DM Mono', monospace;
+    font-size: clamp(0.55rem, 2vw, 0.65rem);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    min-height: 48px;
+    border: 1px solid var(--dim);
+    background: transparent;
+    color: var(--mid);
+    cursor: pointer;
+    transition: all 0.12s;
+    position: relative;
+    overflow: hidden;
+  }
+  #tapBtn:hover, #tapBtn:active {
+    border-color: var(--fg);
+    color: var(--fg);
+  }
+  /* ripple on tap */
+  #tapBtn.tapped::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: rgba(240,237,232,0.08);
+    animation: ripple 0.3s ease-out forwards;
+  }
+  @keyframes ripple { to { opacity: 0; transform: scale(1.5); } }
+
+  /* ── Divider ────────────────────────────────────────── */
+  .divider {
+    height: 1px;
+    background: var(--dim);
+  }
+
+  /* ── Song selector ──────────────────────────────────── */
+  .song-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .song-label {
+    font-size: clamp(0.45rem, 1.5vw, 0.5rem);
+    letter-spacing: 0.45em;
+    color: var(--mid);
+    text-transform: uppercase;
+    text-align: left;
+  }
+
+  .song-select {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--dim);
+    color: var(--fg);
+    font-family: 'DM Mono', monospace;
+    font-size: max(16px, 0.78rem);
+    padding: 0.65rem 2.2rem 0.65rem 0.8rem;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23555'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.8rem center;
+    background-clip: padding-box;
+    transition: border-color 0.2s;
+    text-overflow: ellipsis;
+    min-height: 48px;
+  }
+  .song-select:focus { border-color: var(--accent); }
+  .song-select option { background: #111; color: var(--fg); }
+
+  .song-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 1.3em;
+    gap: 0.5rem;
+  }
+  .song-artist {
+    font-size: clamp(0.48rem, 1.6vw, 0.56rem);
+    letter-spacing: 0.15em;
+    color: var(--mid);
+    text-transform: uppercase;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    flex: 1; text-align: left;
+  }
+  .song-bpm-badge {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(0.9rem, 3vw, 1.1rem);
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+  .song-bpm-badge.visible { opacity: 1; }
+
+  /* ── Custom library card ────────────────────────────── */
+
+  /* Spacer that pushes the card away from the player */
+  .custom-spacer {
+    margin-top: clamp(1rem, 4vw, 2rem);
+  }
+
+  .custom-card {
+    background: #111;
+    border: 1px solid #2e2e2e;
+    border-top: 2px solid #333;
+    padding: clamp(1rem, 4vw, 1.5rem);
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    /* Soft shadow to lift it off the page */
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.5);
+  }
+
+  .custom-card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .custom-card-titles { flex: 1; }
+
+  .custom-card-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(1rem, 4vw, 1.4rem);
+    letter-spacing: 0.15em;
+    color: var(--fg);
+    opacity: 0.7;
+    line-height: 1;
+  }
+
+  .custom-card-desc {
+    font-size: clamp(0.48rem, 1.6vw, 0.56rem);
+    letter-spacing: 0.08em;
+    color: var(--mid);
+    line-height: 1.6;
+    margin-top: 0.35rem;
+  }
+
+  /* Upload icon badge */
+  .upload-icon {
+    width: 36px; height: 36px;
+    flex-shrink: 0;
+    border: 1px solid #333;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--mid);
+    font-size: 1rem;
+  }
+
+  /* Drop zone */
+  .drop-zone {
+    position: relative;
+    border: 1px dashed #333;
+    background: #0d0d0d;
+    padding: clamp(1.2rem, 4vw, 1.8rem) 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    min-height: 110px;
+  }
+  .drop-zone:hover, .drop-zone.dragover {
+    border-color: var(--accent);
+    background: rgba(255,61,0,0.04);
+  }
+  .drop-zone.loaded {
+    border-color: #2a6e2a;
+    background: rgba(0,180,0,0.04);
+  }
+
+  #jsonFile {
+    position: absolute; inset: 0;
+    opacity: 0; cursor: pointer;
+    width: 100%; height: 100%; z-index: 2;
+  }
+
+  .drop-zone-icon {
+    font-size: 1.6rem;
+    line-height: 1;
+    color: #333;
+    transition: color 0.2s;
+    pointer-events: none;
+  }
+  .drop-zone:hover .drop-zone-icon,
+  .drop-zone.dragover .drop-zone-icon { color: var(--accent); }
+  .drop-zone.loaded .drop-zone-icon { color: #2a8c2a; }
+
+  .drop-zone-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(0.9rem, 3.5vw, 1.1rem);
+    letter-spacing: 0.2em;
+    color: var(--mid);
+    pointer-events: none;
+    transition: color 0.2s;
+  }
+  .drop-zone:hover .drop-zone-title,
+  .drop-zone.dragover .drop-zone-title { color: var(--fg); }
+  .drop-zone.loaded .drop-zone-title { color: var(--fg); }
+
+  .drop-zone-sub {
+    font-size: clamp(0.45rem, 1.5vw, 0.52rem);
+    letter-spacing: 0.2em;
+    color: #3a3a3a;
+    text-transform: uppercase;
+    pointer-events: none;
+    transition: color 0.2s;
+  }
+  .drop-zone:hover .drop-zone-sub { color: var(--mid); }
+  .drop-zone.loaded .drop-zone-sub { color: #4a8c4a; }
+
+  /* Status row below drop zone */
+  .file-status {
+    font-size: clamp(0.48rem, 1.6vw, 0.56rem);
+    letter-spacing: 0.1em;
+    color: var(--mid);
+    display: none;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.1rem 0;
+  }
+  .file-status.visible { display: flex; }
+  .file-status-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--mid);
+    flex-shrink: 0;
+  }
+  .file-status.success .file-status-dot { background: #4caf50; }
+  .file-status.success { color: #4caf50; }
+  .file-status.error .file-status-dot { background: var(--accent); }
+  .file-status.error { color: var(--accent); }
+
+  /* Format hint */
+  .format-hint {
+    background: #0a0a0a;
+    border: 1px solid #1e1e1e;
+    padding: 0.7rem 0.9rem;
+    font-size: clamp(0.44rem, 1.4vw, 0.5rem);
+    letter-spacing: 0.05em;
+    color: #383838;
+    line-height: 1.8;
+  }
+  .format-hint strong { color: #484848; font-weight: normal; }
+
+  .restore-btn {
+    display: none;
+    background: transparent;
+    border: 1px solid #2e2e2e;
+    color: var(--mid);
+    font-family: 'DM Mono', monospace;
+    font-size: clamp(0.45rem, 1.5vw, 0.52rem);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    padding: 0.65rem 1rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    min-height: 44px;
+    width: 100%;
+    text-align: center;
+  }
+  .restore-btn:hover { border-color: var(--fg); color: var(--fg); }
+  .restore-btn.visible { display: block; }
+
+  /* ── Tablet / desktop ───────────────────────────────── */
+  @media (min-width: 600px) {
+    input[type=range]::-webkit-slider-thumb { width: 20px; height: 20px; margin-top: -9px; }
+    input[type=range]::-moz-range-thumb { width: 20px; height: 20px; }
+  }
+
+  /* ── Landscape phone ────────────────────────────────── */
+  @media (max-height: 480px) and (orientation: landscape) {
+    .container { gap: 0.4rem; }
+    .bpm-display { font-size: clamp(3rem, 15vh, 6rem); }
+    #playBtn { width: 64px; height: 64px; font-size: 1.4rem; }
+    .title { font-size: clamp(2rem, 9vh, 3rem); }
+    .divider { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="flash-overlay" id="flashOverlay"></div>
+
+<div class="container">
+
+  <!-- ① Header: title left, START button right -->
+  <div class="header">
+    <div class="title-block">
+      <div class="title">METRO</div>
+      <div class="subtitle">Visual Metronome</div>
+    </div>
+    <button id="playBtn" aria-label="Start metronome">▶</button>
+  </div>
+
+  <!-- ② Big BPM number -->
+  <div class="bpm-block">
+    <span class="bpm-display" id="bpmDisplay">120</span>
+    <div class="bpm-meta">
+      <span class="bpm-label">BPM</span>
+      <span class="tempo-name" id="tempoName">Allegro</span>
+    </div>
+  </div>
+
+  <!-- ③ Beat dots -->
+  <div class="beat-strip">
+    <div class="beat-dot" id="d0"></div>
+    <div class="beat-dot" id="d1"></div>
+    <div class="beat-dot" id="d2"></div>
+    <div class="beat-dot" id="d3"></div>
+  </div>
+
+  <!-- ④ Slider -->
+  <div class="slider-wrap">
+    <input type="range" id="bpmSlider" min="20" max="300" value="120" step="1">
+    <div class="range-labels"><span>20</span><span>300</span></div>
+  </div>
+
+  <!-- ⑤ BPM input + tap tempo -->
+  <div class="controls-row">
+    <div class="bpm-input-wrap">
+      <span class="bpm-input-label">BPM</span>
+      <input type="number" class="bpm-input" id="bpmInput"
+             min="20" max="300" value="120"
+             inputmode="numeric" pattern="[0-9]*"
+             aria-label="BPM value">
+    </div>
+    <button id="tapBtn">Tap Tempo</button>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ⑥ Song selector -->
+  <div class="song-section">
+    <div class="song-label">Song Library</div>
+    <select class="song-select" id="songSelect">
+      <option value="">— Select a song to set BPM —</option>
+    </select>
+    <div class="song-meta">
+      <span class="song-artist" id="songArtist"></span>
+      <span class="song-bpm-badge" id="songBpmBadge"></span>
+    </div>
+  </div>
+
+  <!-- ⑦ Custom song list — clearly separated card -->
+  <div class="custom-spacer"></div>
+  <div class="custom-card">
+
+    <div class="custom-card-header">
+      <div class="custom-card-titles">
+        <div class="custom-card-title">Custom Song List</div>
+        <div class="custom-card-desc">
+          Replace the built-in library with your own songs.<br>
+          Upload a JSON file and it will populate the dropdown above.
+        </div>
+      </div>
+      <div class="upload-icon" aria-hidden="true">↑</div>
+    </div>
+
+    <!-- Drop zone -->
+    <div class="drop-zone" id="dropZone" role="button" tabindex="0" aria-label="Upload JSON song file">
+      <input type="file" id="jsonFile" accept=".json" aria-label="Choose JSON song file">
+      <div class="drop-zone-icon" id="dropIcon">⬆</div>
+      <div class="drop-zone-title" id="dropTitle">Tap to choose file</div>
+      <div class="drop-zone-sub" id="dropSub">or drag &amp; drop here · .json files only</div>
+    </div>
+
+    <!-- Status message -->
+    <div class="file-status" id="fileStatus">
+      <div class="file-status-dot"></div>
+      <span id="fileStatusText"></span>
+    </div>
+
+    <!-- Format hint -->
+    <div class="format-hint">
+      <strong>Expected format —</strong>
+      [ { "Name": "Song Title", "Artist": "Artist Name", "BPM": 120 }, … ]<br>
+      <strong>Required:</strong> Name, BPM &nbsp;·&nbsp; <strong>Optional:</strong> Artist
+    </div>
+
+    <button class="restore-btn" id="restoreBtn">↩ Restore built-in song list</button>
+
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// ── Built-in song library ───────────────────────────────────────────────────
+const BUILTIN_SONGS = 
+[
+  { "Name": "In Between Days", "Artist": "The Cure", "BPM": 143 },
+  { "Name": "Good Souls", "Artist": "Starsailor", "BPM": 154 },
+  { "Name": "Pump It Up", "Artist": "Elvis Costello", "BPM": 129 },
+  { "Name": "God Put a Smile Upon Your Face", "Artist": "Coldplay", "BPM": 127 },
+  { "Name": "Hey Joe", "Artist": "Jimi Hendrix", "BPM": 157 },
+  { "Name": "Ramble On", "Artist": "Led Zeppelin", "BPM": 99 },
+  { "Name": "A Message to You Rudy", "Artist": "The Specials", "BPM": 103 },
+  { "Name": "Down in the Tube Station at Midnight", "Artist": "The Jam", "BPM": 173 },
+  { "Name": "Town Called Malice", "Artist": "The Jam", "BPM": 102 },
+  { "Name": "Time", "Artist": "Pink Floyd", "BPM": 120 },
+  { "Name": "Molly's Chambers", "Artist": "Kings of Leon", "BPM": 146 },
+  { "Name": "Boys in the Better Land", "Artist": "Fontaines D.C.", "BPM": 177 },
+  { "Name": "The Eton Rifles", "Artist": "The Jam", "BPM": 157 },
+  { "Name": "Riders on the Storm", "Artist": "The Doors", "BPM": 104 },
+  { "Name": "Comfortably Numb", "Artist": "Pink Floyd", "BPM": 127 },
+  { "Name": "LA Woman", "Artist": "The Doors", "BPM": 171 },
+  { "Name": "Times Like These", "Artist": "Foo Fighters", "BPM": 145 },
+  { "Name": "Dakota", "Artist": "Stereophonics", "BPM": 147 },
+  { "Name": "Night Boat to Cairo", "Artist": "Madness", "BPM": 155 },
+  { "Name": "So Lonely", "Artist": "The Police", "BPM": 78 },
+  { "Name": "No Woman No Cry", "Artist": "Bob Marley & The Wailers", "BPM": 97 },
+  { "Name": "Roadhouse Blues", "Artist": "The Doors", "BPM": 121 }
+]
+;
+
+// ── DOM refs ────────────────────────────────────────────────────────────────
+const bpmSlider    = document.getElementById('bpmSlider');
+const bpmDisplayEl = document.getElementById('bpmDisplay');
+const bpmInput     = document.getElementById('bpmInput');
+const playBtn      = document.getElementById('playBtn');
+const tapBtn       = document.getElementById('tapBtn');
+const flashOverlay = document.getElementById('flashOverlay');
+const tempoNameEl  = document.getElementById('tempoName');
+const dots         = [0,1,2,3].map(i => document.getElementById('d' + i));
+const songSelect   = document.getElementById('songSelect');
+const songArtist   = document.getElementById('songArtist');
+const songBpmBadge = document.getElementById('songBpmBadge');
+const jsonFileInput= document.getElementById('jsonFile');
+const dropZone     = document.getElementById('dropZone');
+const dropIcon     = document.getElementById('dropIcon');
+const dropTitle    = document.getElementById('dropTitle');
+const dropSub      = document.getElementById('dropSub');
+const fileStatus   = document.getElementById('fileStatus');
+const fileStatusText = document.getElementById('fileStatusText');
+const restoreBtn   = document.getElementById('restoreBtn');
+
+// ── State ───────────────────────────────────────────────────────────────────
+let bpm = 120, running = false, intervalId = null, beatCount = 0, tapTimes = [];
+let songs = [];
+let usingCustom = false;
+
+// ── Tempo names ─────────────────────────────────────────────────────────────
+const TEMPOS = [
+  [20,40,'Grave'],[40,60,'Largo'],[60,66,'Larghetto'],[66,76,'Adagio'],
+  [76,108,'Andante'],[108,120,'Moderato'],[120,156,'Allegro'],
+  [156,176,'Vivace'],[176,200,'Presto'],[200,300,'Prestissimo'],
+];
+const getTempoName = b => (TEMPOS.find(([lo,hi]) => b >= lo && b < hi) || TEMPOS.at(-1))[2];
+
+// ── BPM ─────────────────────────────────────────────────────────────────────
+function setBPM(val, confirm = false) {
+  bpm = Math.min(300, Math.max(20, Math.round(val)));
+  bpmSlider.value = bpm;
+  bpmInput.value  = bpm;
+  bpmDisplayEl.textContent = bpm;
+  tempoNameEl.textContent  = getTempoName(bpm);
+  if (confirm) {
+    bpmDisplayEl.style.color = '#fff';
+    setTimeout(() => bpmDisplayEl.style.color = '', 180);
+  }
+  if (running) { clearInterval(intervalId); startInterval(); }
+}
+
+// ── Metronome ────────────────────────────────────────────────────────────────
+function doFlash() {
+  flashOverlay.classList.add('on');
+  bpmDisplayEl.classList.add('beat');
+  dots.forEach(d => d.classList.remove('active'));
+  dots[beatCount % 4].classList.add('active');
+  beatCount++;
+  setTimeout(() => {
+    flashOverlay.classList.remove('on');
+    bpmDisplayEl.classList.remove('beat');
+  }, Math.min(80, (60000 / bpm) * 0.25));
+}
+
+function startInterval() { intervalId = setInterval(doFlash, 60000 / bpm); doFlash(); }
+
+function start() {
+  running = true;
+  playBtn.innerHTML = '■';
+  playBtn.setAttribute('aria-label', 'Stop metronome');
+  playBtn.classList.add('running');
+  beatCount = 0;
+  startInterval();
+}
+
+function stop() {
+  running = false;
+  playBtn.innerHTML = '▶';
+  playBtn.setAttribute('aria-label', 'Start metronome');
+  playBtn.classList.remove('running');
+  clearInterval(intervalId);
+  dots.forEach(d => d.classList.remove('active'));
+}
+
+// ── Song dropdown ────────────────────────────────────────────────────────────
+function populateDropdown(data) {
+  songs = [...data].sort((a, b) => a.Name.localeCompare(b.Name));
+  songSelect.innerHTML = '<option value="">— Select a song to set BPM —</option>';
+  songs.forEach((song, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = song.Artist ? `${song.Name}  —  ${song.Artist}` : song.Name;
+    songSelect.appendChild(opt);
+  });
+}
+
+function onSongChange() {
+  const idx = songSelect.value;
+  if (idx === '') {
+    songArtist.textContent = '';
+    songBpmBadge.textContent = '';
+    songBpmBadge.classList.remove('visible');
+    return;
+  }
+  const song = songs[parseInt(idx)];
+  songArtist.textContent = song.Artist || '';
+  songBpmBadge.textContent = song.BPM + ' BPM';
+  songBpmBadge.classList.add('visible');
+  // Auto-apply BPM on selection
+  setBPM(song.BPM, true);
+}
+
+songSelect.addEventListener('change', onSongChange);
+
+// ── JSON loading ─────────────────────────────────────────────────────────────
+function setDropSuccess(filename, count) {
+  dropZone.classList.add('loaded');
+  dropIcon.textContent = '✓';
+  dropTitle.textContent = filename;
+  dropSub.textContent = `${count} songs loaded`;
+  fileStatus.className = 'file-status visible success';
+  fileStatusText.textContent = `${count} songs imported — dropdown updated`;
+  usingCustom = true;
+  restoreBtn.classList.add('visible');
+}
+
+function setDropError(msg) {
+  dropZone.classList.remove('loaded');
+  dropIcon.textContent = '✕';
+  dropTitle.textContent = 'Upload failed';
+  dropSub.textContent = msg;
+  fileStatus.className = 'file-status visible error';
+  fileStatusText.textContent = msg;
+}
+
+function loadJSONData(data, filename) {
+  try {
+    if (!Array.isArray(data)) throw new Error('JSON must be an array of objects');
+    if (!data.every(s => s.Name && s.BPM)) throw new Error('Each entry needs at least Name and BPM');
+    populateDropdown(data);
+    setDropSuccess(filename, data.length);
+  } catch (err) {
+    setDropError(err.message);
+  }
+}
+
+function loadJSONFile(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    try { loadJSONData(JSON.parse(e.target.result), file.name); }
+    catch { setDropError('Invalid JSON — could not parse file'); }
+  };
+  reader.readAsText(file);
+}
+
+jsonFileInput.addEventListener('change', e => { if (e.target.files[0]) loadJSONFile(e.target.files[0]); });
+
+// Drag & drop on the zone
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('dragover');
+  if (e.dataTransfer.files[0]) loadJSONFile(e.dataTransfer.files[0]);
+});
+// Keyboard accessibility
+dropZone.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); jsonFileInput.click(); }});
+
+// Restore built-in
+restoreBtn.addEventListener('click', () => {
+  populateDropdown(BUILTIN_SONGS);
+  dropZone.classList.remove('loaded');
+  dropIcon.textContent = '⬆';
+  dropTitle.textContent = 'Tap to choose file';
+  dropSub.textContent = 'or drag & drop here · .json files only';
+  fileStatus.className = 'file-status';
+  usingCustom = false;
+  restoreBtn.classList.remove('visible');
+  songSelect.value = '';
+  onSongChange();
+});
+
+// ── Controls ──────────────────────────────────────────────────────────────────
+playBtn.addEventListener('click', () => running ? stop() : start());
+
+bpmSlider.addEventListener('input', () => {
+  setBPM(parseInt(bpmSlider.value));
+  songSelect.value = ''; onSongChange();
+});
+
+function commitBpmInput() {
+  const v = parseInt(bpmInput.value);
+  if (!isNaN(v)) { setBPM(v); songSelect.value = ''; onSongChange(); }
+}
+bpmInput.addEventListener('change', commitBpmInput);
+bpmInput.addEventListener('keydown', e => { if (e.key === 'Enter') { commitBpmInput(); bpmInput.blur(); }});
+
+// ── Tap tempo ─────────────────────────────────────────────────────────────────
+function handleTap() {
+  const now = Date.now();
+  tapTimes.push(now);
+  if (tapTimes.length > 8) tapTimes.shift();
+  if (tapTimes.length >= 2) {
+    const avg = tapTimes.slice(1).reduce((sum, t, i) => sum + (t - tapTimes[i]), 0) / (tapTimes.length - 1);
+    setBPM(Math.round(60000 / avg));
+    songSelect.value = ''; onSongChange();
+  }
+  // Visual ripple feedback
+  tapBtn.classList.remove('tapped');
+  void tapBtn.offsetWidth; // reflow to restart animation
+  tapBtn.classList.add('tapped');
+  clearTimeout(tapBtn._reset);
+  tapBtn._reset = setTimeout(() => { tapTimes = []; }, 2000);
+}
+
+tapBtn.addEventListener('click', handleTap);
+tapBtn.addEventListener('touchstart', e => { e.preventDefault(); handleTap(); }, { passive: false });
+
+// ── Keyboard ──────────────────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.target !== document.body) return;
+  if (e.code === 'Space') { e.preventDefault(); running ? stop() : start(); }
+  if (e.code === 'KeyT')  handleTap();
+});
+
+// ── Init: load built-in songs ─────────────────────────────────────────────────
+populateDropdown(BUILTIN_SONGS);
+</script>
+</body>
+</html>
