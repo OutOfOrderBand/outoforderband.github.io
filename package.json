@@ -17,10 +17,10 @@
   },
   "homepage": "https://github.com/normansolutions/OOOB#readme",
   "dependencies": {
-    "@fullhuman/postcss-purgecss": "^7.0.2",
+    "@fullhuman/postcss-purgecss": "^8.0.0",
     "autoprefixer": "^10.4.20",
     "cssnano": "^7.0.6",
     "postcss-cli": "^11.0.0",
-    "purgecss": "^7.0.2"
+    "purgecss": "^8.0.0"
   }
 }
