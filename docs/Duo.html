@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Darren &amp; Clive (perform as From Out Of Order)</title>
+
+<!-- Basic styling to match Out Of Order look: dark background, red accent, centered content -->
+<style>
+  :root{
+    --bg:#0b0b0b;
+    --panel:#111;
+    --muted:#bfbfbf;
+    --accent:#c8102e;
+    --max-width:980px;
+    --gap:28px;
+    --radius:6px;
+    --container-padding:20px;
+  }
+
+  html,body{height:100%;}
+  body{
+    margin:0;
+    font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+    background:var(--bg);
+    color:#eee;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    line-height:1.5;
+  }
+
+  /* page wrapper */
+  .wrap{
+    max-width:var(--max-width);
+    margin:0 auto;
+    padding:36px var(--container-padding) 60px;
+  }
+
+  /* masthead */
+  .masthead{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    margin-bottom:28px;
+  }
+
+  .masthead .logo{
+    width:84px;
+    height:84px;
+    flex:0 0 84px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(180deg,#0f0f0f,#0b0b0b);
+    border-radius:6px;
+    border:2px solid rgba(255,255,255,0.03);
+    overflow:hidden;
+  }
+
+  .masthead .logo img{
+    max-width:100%;
+    height:auto;
+    display:block;
+  }
+
+  .site-title{
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
+
+  .site-title h1{
+    margin:0;
+    font-size:1.6rem;
+    letter-spacing:0.6px;
+    color:#fff;
+  }
+
+  .site-title p{
+    margin:6px 0 0;
+    color:var(--muted);
+    font-size:0.95rem;
+  }
+
+  /* intro panel */
+  .intro{
+    background:linear-gradient(180deg,var(--panel),#0f0f0f);
+    border-left:6px solid var(--accent);
+    padding:18px;
+    margin-bottom:var(--gap);
+    border-radius:4px;
+    color:var(--muted);
+  }
+
+  .intro p{margin:0;font-size:1rem;}
+
+  /* videos grid */
+  .videos{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:var(--gap);
+  }
+
+  @media(min-width:760px){
+    .videos{grid-template-columns:repeat(2,1fr);}
+  }
+
+  .video-card{
+    background:#0d0d0d;
+    border:1px solid rgba(255,255,255,0.03);
+    padding:10px;
+    border-radius:var(--radius);
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+
+  .video-card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 8px 30px rgba(0,0,0,0.6);
+  }
+
+  .video-frame{
+    position:relative;
+    width:100%;
+    padding-bottom:56.25%;
+    height:0;
+    overflow:hidden;
+    border-radius:4px;
+    background:#000;
+  }
+
+  .video-frame iframe{
+    position:absolute;
+    top:0;left:0;width:100%;height:100%;
+    border:0;
+  }
+
+  .video-meta{
+    margin-top:10px;
+    color:var(--muted);
+    font-size:0.95rem;
+  }
+
+  /* footer */
+  footer{
+    margin-top:44px;
+    padding-top:18px;
+    border-top:1px solid rgba(255,255,255,0.03);
+    color:var(--muted);
+    font-size:0.9rem;
+    text-align:center;
+  }
+
+  a{color:var(--accent); text-decoration:none;}
+  a:hover{text-decoration:underline;}
+</style>
+</head>
+<body>
+
+  <div class="wrap">
+
+    <!-- Masthead: logo + title -->
+    <header class="masthead" role="banner">
+      <div class="logo" aria-hidden="true">
+        <!-- Replace with your logo file or keep text -->
+        <img src="./LOGO.png" alt="From Out Of Order logo" />
+      </div>
+
+      <div class="site-title">
+        <h1>Darren &amp; Clive</h1>
+        <p>Perform as “From Out Of Order” — live clips, rehearsals and highlights</p>
+      </div>
+    </header>
+
+    <!-- Intro text -->
+    <section class="intro" aria-labelledby="intro-heading">
+      <h2 id="intro-heading" style="display:none">Intro</h2>
+      <p>
+        Darren &amp; Clive present a selection of recent performances and rehearsal clips.
+        Short, honest arrangements with vocal harmony and acoustic instrumentation.
+        Click any video to watch — more will be added as new recordings are uploaded.
+      </p>
+    </section>
+
+    <!-- Videos grid -->
+    <main class="videos" role="main" aria-label="Video performances">
+
+      <!-- Video item 1 -->
+      <article class="video-card" aria-labelledby="v1-title">
+        <div class="video-frame">
+          <iframe src="https://www.youtube.com/embed/VIDEO_ID_HERE_1"
+                  title="Darren &amp; Clive — performance 1"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen></iframe>
+        </div>
+        <div class="video-meta" id="v1-title">Performance 1 — Live at The Venue</div>
+      </article>
+
+      <!-- Video item 2 -->
+      <article class="video-card" aria-labelledby="v2-title">
+        <div class="video-frame">
+          <iframe src="https://www.youtube.com/embed/VIDEO_ID_HERE_2"
+                  title="Darren &amp; Clive — performance 2"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen></iframe>
+        </div>
+        <div class="video-meta" id="v2-title">Performance 2 — Acoustic Session</div>
+      </article>
+
+      <!-- Video item 3 -->
+      <article class="video-card" aria-labelledby="v3-title">
+        <div class="video-frame">
+          <iframe src="https://www.youtube.com/embed/VIDEO_ID_HERE_3"
+                  title="Darren &amp; Clive — performance 3"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen></iframe>
+        </div>
+        <div class="video-meta" id="v3-title">Rehearsal Clip — New Arrangement</div>
+      </article>
+
+      <!-- Video item 4 -->
+      <article class="video-card" aria-labelledby="v4-title">
+        <div class="video-frame">
+          <iframe src="https://www.youtube.com/embed/VIDEO_ID_HERE_4"
+                  title="Darren &amp; Clive — performance 4"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen></iframe>
+        </div>
+        <div class="video-meta" id="v4-title">Gig Highlight — Crowd Favourite</div>
+      </article>
+
+    </main>
+
+    <!-- Footer -->
+    <footer role="contentinfo">
+      <div>
+        <strong>From Out Of Order</strong> — Darren &amp; Clive
+      </div>
+      <div style="margin-top:8px;">
+        <a href="/contact">Contact</a> &nbsp;•&nbsp; <a href="/shows">Shows</a> &nbsp;•&nbsp; <a href="/">Out Of Order</a>
+      </div>
+    </footer>
+
+  </div>
+
+</body>
+</html>

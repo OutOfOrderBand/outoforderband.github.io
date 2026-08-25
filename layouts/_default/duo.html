@@ -1,0 +1,37 @@
+{{ define "title" }} Out Of Order Band Videos {{ end }}
+{{ define "main" }}
+<div class="speech-bubble">
+  <a href="/contact">
+    <h4>Click to get in touch!</h4>
+  </a>
+</div>
+<div class="ns-contact-shell">
+  <div class="ns-contact">
+    <h1 class="ns-h1-contact">Darren & Clive (Duo)</h1>
+    <h4 class="ns-h4">
+Darren & Clive perform as a duo under the name <em>"From Out Of Order"</em>.<hr/> We can promise authentic tunes on real instruments, played with passion - the perfect accompaniment to a good pint and a great time. 🍻😎🥁🎹🎤
+    </h4>
+    </div>
+</div>
+
+<div class="ns-gigs">
+  <div class="gallery">
+    {{ range site.Data.duovideos }}
+    <div>
+      <a data-fancybox data-ratio="2" href="{{ .url }}">
+        <span class="video-thumbnail">
+          <div class="NSPlay"></div>
+          <img
+            src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=="
+            data-src="https://img.youtube.com/vi/{{ .id }}/0.jpg"
+            alt="{{ .title }} video thumbnail"
+            loading="lazy"
+          />
+        </span>
+      </a>
+      <p>{{ .title }}</p>
+    </div>
+    {{ end }}
+  </div>
+</div>
+{{ end }}

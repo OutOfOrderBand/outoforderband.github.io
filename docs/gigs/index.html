@@ -92,15 +92,15 @@
 
 <link
   rel="preload"
-  href="/css/main.min.0ef20412e476927375a4ad635ab6b6c840020542a29e2c6dc6c565e62253f05c.css?v=ns-fingerprint"
-  integrity="sha256-DvIEEuR2knN1pK1jWra2yEACBUKinixtxsVl5iJT8Fw="
+  href="/css/main.min.22777e62102d68d9c0389e80cefed8f79be0a89e5f4d2adb65637a17910e29f1.css?v=ns-fingerprint"
+  integrity="sha256-Ind&#43;YhAtaNnAOJ6Azv7Y95vgqJ5fTSrbZWN6F5EOKfE="
   as="style"
   crossorigin="anonymous"
 />
 <link
   rel="stylesheet"
-  href="/css/main.min.0ef20412e476927375a4ad635ab6b6c840020542a29e2c6dc6c565e62253f05c.css?v=ns-fingerprint"
-  integrity="sha256-DvIEEuR2knN1pK1jWra2yEACBUKinixtxsVl5iJT8Fw="
+  href="/css/main.min.22777e62102d68d9c0389e80cefed8f79be0a89e5f4d2adb65637a17910e29f1.css?v=ns-fingerprint"
+  integrity="sha256-Ind&#43;YhAtaNnAOJ6Azv7Y95vgqJ5fTSrbZWN6F5EOKfE="
   media="print"
   onload="this.media='all'"
   crossorigin="anonymous"
@@ -155,7 +155,7 @@
       })(document);
     </script>
 
-    <script src="https://polyfill.io/v2/polyfill.min.js?features=IntersectionObserver"></script>
+    
   </head>
   <body>
     
@@ -1163,13 +1163,20 @@ l43 -115 51 26 c81 41 127 73 121 83 -6 9 8 14 27 11 19 -3 130 150 159 217
   </div>
 </div>
 
+
 <div class="ns-tagline">Indie Rock band from the south of England</div>
+  <p style="text-align:center; margin-bottom:10px;">
+    <a class="ns-duo-btn" href="/duo/" title="Darren &amp; Clive Duo" aria-label="Darren & Clive Duo">  
+      <span class="ns-duo-text">...Or Click For Darren &amp; Clive Duo</span>
+      <span class="ns-duo-emoji" aria-hidden="true"> 🥁 🎸</span>
+    </a>
+  </p>
 
 <nav class="ns-social" aria-label="Social media links">
-  <p>
-    <button class="ns-linktree-btn">
-      <a href="https://linktr.ee/OOOB" target="_blank" rel="noopener">
-                  <svg
+
+  <p style="text-align:center; margin-top:6px;">
+    <a class="ns-linktree-btn" href="https://linktr.ee/OOOB" target="_blank" rel="noopener" title="Linktree">
+                <svg
             viewBox="-23.044000000000004 -18.006999999999998 10828.765 2026.6576107229826"
             xmlns="http://www.w3.org/2000/svg"
             width="125"
@@ -1189,8 +1196,7 @@ l43 -115 51 26 c81 41 127 73 121 83 -6 9 8 14 27 11 19 -3 130 150 159 217
               fill-rule="evenodd"
             />
           </svg>
-      </a>
-    </button>
+    </a>
   </p>
 
   <a target="_blank" rel="noopener" href="https://www.facebook.com/outoforderbanduk">
@@ -1275,8 +1281,121 @@ l43 -115 51 26 c81 41 127 73 121 83 -6 9 8 14 27 11 19 -3 130 150 159 217
     </svg>
   </a>
 
+
+
   <hr />
 </nav>
+
+<style>
+   
+  .ns-duo-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 18px;
+    border-radius:12px;
+    text-decoration:none;
+    font-weight:800;
+    color:#fff;
+    white-space:nowrap;
+     
+    background: linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 40%, rgba(255,255,255,0.01) 100%),
+                linear-gradient(180deg, rgba(195,16,38,0.18) 0%, rgba(140,10,22,0.22) 100%);
+    border: 1px solid rgba(255,255,255,0.06);
+    box-shadow:
+      0 10px 30px rgba(140,10,22,0.18),     
+      inset 0 2px 8px rgba(255,255,255,0.03);  
+    backdrop-filter: blur(6px) saturate(120%);
+    -webkit-backdrop-filter: blur(6px) saturate(120%);
+    transition: transform .14s ease, box-shadow .14s ease, filter .12s ease;
+    vertical-align:middle;
+  }
+
+   
+  .ns-duo-btn:hover,
+  .ns-duo-btn:focus{
+    transform: translateY(-3px);
+    box-shadow:
+      0 18px 40px rgba(140,10,22,0.26),
+      inset 0 3px 10px rgba(255,255,255,0.04);
+    filter: brightness(1.03);
+    outline: none;
+    text-decoration: none;
+  }
+
+   
+  .ns-duo-btn::after{
+    content: "";
+    position: absolute;
+    pointer-events: none;
+  }
+
+  .ns-duo-lead{
+    font-style:italic;
+    color: rgba(255,255,255,0.9);
+    opacity:0.95;
+    font-weight:700;
+  }
+
+  .ns-duo-text{
+    color:#fff;
+    letter-spacing:0.2em;
+    font-family: Sedgwick Ave Display, cursive;
+  }
+
+  .ns-duo-emoji{
+    font-size:1.05em;
+    line-height:1;
+  }
+
+   
+  @media (max-width:420px){
+    .ns-duo-btn{
+      padding:8px 12px;
+      gap:8px;
+      font-weight:700;
+      font-size:0.92rem;
+      border-radius:10px;
+      box-shadow:
+        0 8px 22px rgba(140,10,22,0.16),
+        inset 0 2px 6px rgba(255,255,255,0.03);
+    }
+    .ns-duo-text{ font-size:0.88rem; }
+    .ns-duo-lead{ font-size:0.82rem; }
+    .ns-duo-emoji{ font-size:0.98rem; }
+  }
+
+   
+  .ns-linktree-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    background:#000;
+    color:#fff;
+    padding:8px 12px;
+    border-radius:8px;
+    text-decoration:none;
+    border:1px solid rgba(255,255,255,0.06);
+    box-shadow:0 4px 10px rgba(0,0,0,0.35);
+  }
+
+  .ns-linktree-btn:hover,
+  .ns-linktree-btn:focus{
+    background:#111;
+    text-decoration:none;
+    outline:none;
+  }
+
+  .ns-linktree-btn > * {
+    display:inline-block;
+    vertical-align:middle;
+  }
+
+   
+  .ns-social a {
+    margin: 0 8px;
+  }
+</style>
 
 
     
