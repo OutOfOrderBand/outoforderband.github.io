@@ -33,7 +33,7 @@ $form.Size = New-Object System.Drawing.Size(370, 280)
 $form.StartPosition = "CenterScreen"
 $form.FormBorderStyle = "FixedDialog"
 $form.MaximizeBox = $false
-$form.MinimizeBox = $fal
+$form.MinimizeBox = $false
 # "Apply to All" checkbox
 $chkApplyAll = New-Object System.Windows.Forms.CheckBox
 $chkApplyAll.Text = "Apply to all people"
