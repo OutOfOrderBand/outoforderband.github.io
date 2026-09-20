@@ -4,9 +4,10 @@ Add-Type -AssemblyName WindowsBase
 Add-Type -AssemblyName System.Xaml
 
 # ====== CONFIG ======
+# Update these paths as needed
 $htmlPath = "C:\Users\User\OneDrive\Documents\repos\Hugo\outoforderband.github.io\static\Dates.html"
 $jsonBackupPath = "$env:TEMP\unavailableDates-backup.json"
-# Path to gigs.json (relative to script or absolute). Change if needed.
+# gigs.json path (relative to script folder). Change if needed.
 $gigsJsonPath = Join-Path -Path (Split-Path -Parent $MyInvocation.MyCommand.Definition) -ChildPath "data\gigs.json"
 
 # ====== LOAD JSON FROM HTML ======
@@ -30,6 +31,7 @@ if ($html -match 'const\s+DATA\s*=\s*(\{[\s\S]*?\});') {
     exit
 }
 
+# Ensure structure exists
 if (-not $data.PSObject.Properties.Name -contains 'unavailableDates') {
     $data | Add-Member -MemberType NoteProperty -Name unavailableDates -Value @{}
 }
@@ -41,10 +43,10 @@ if (-not $data.PSObject.Properties.Name -contains 'names') {
 $xaml = @"
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Manage Unavailable Dates" Height="460" Width="720" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+        Title="Manage Unavailable Dates" Height="480" Width="760" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
   <Grid Margin="10">
     <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="420"/>
+      <ColumnDefinition Width="460"/>
       <ColumnDefinition Width="12"/>
       <ColumnDefinition Width="*"/>
     </Grid.ColumnDefinitions>
@@ -64,11 +66,11 @@ $xaml = @"
       <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
         <StackPanel>
           <TextBlock Text="Start Date" FontWeight="Bold" Margin="0,0,0,4"/>
-          <DatePicker x:Name="startPicker" Width="160"/>
+          <DatePicker x:Name="startPicker" Width="180"/>
         </StackPanel>
         <StackPanel Margin="12,0,0,0">
           <TextBlock Text="End Date" FontWeight="Bold" Margin="0,0,0,4"/>
-          <DatePicker x:Name="endPicker" Width="160"/>
+          <DatePicker x:Name="endPicker" Width="180"/>
         </StackPanel>
       </StackPanel>
 
@@ -77,8 +79,9 @@ $xaml = @"
       <StackPanel Orientation="Horizontal" Margin="0,18,0,0">
         <Button x:Name="btnAction" Content="Add Dates" Width="120" Height="30" Margin="0,0,10,0"/>
         <Button x:Name="btnPreview" Content="Preview JSON" Width="110" Height="30" Margin="0,0,10,0"/>
-        <Button x:Name="btnImportGigs" Content="Import gigs.json (apply to all)" Width="180" Height="30" Margin="0,0,10,0"/>
-        <Button x:Name="btnCancel" Content="Cancel" Width="80" Height="30"/>
+        <Button x:Name="btnImportGigs" Content="Import gigs.json (apply to all)" Width="200" Height="30" Margin="0,0,10,0"/>
+        <Button x:Name="btnUndo" Content="Undo (restore backup)" Width="140" Height="30" Margin="0,0,10,0"/>
+        <Button x:Name="btnCancel" Content="Close" Width="80" Height="30"/>
       </StackPanel>
 
       <TextBlock Text="gigs.json path:" FontWeight="Bold" Margin="0,12,0,4"/>
@@ -88,7 +91,7 @@ $xaml = @"
     <Border Grid.Column="2" BorderBrush="#DDD" BorderThickness="1" Padding="8">
       <StackPanel>
         <TextBlock Text="Existing Unavailable Dates" FontWeight="Bold" Margin="0,0,0,6"/>
-        <ListBox x:Name="lstDates" Height="260" SelectionMode="Extended"/>
+        <ListBox x:Name="lstDates" Height="320" SelectionMode="Extended"/>
         <TextBlock Text="Tip: In Remove mode you can select individual dates above to remove them." FontStyle="Italic" FontSize="11" Margin="0,8,0,0"/>
       </StackPanel>
     </Border>
@@ -111,6 +114,7 @@ $chkClearAll = $window.FindName("chkClearAll")
 $btnAction = $window.FindName("btnAction")
 $btnPreview = $window.FindName("btnPreview")
 $btnImportGigs = $window.FindName("btnImportGigs")
+$btnUndo = $window.FindName("btnUndo")
 $btnCancel = $window.FindName("btnCancel")
 $lstDates = $window.FindName("lstDates")
 $txtGigsPath = $window.FindName("txtGigsPath")
@@ -344,7 +348,7 @@ $btnAction.Add_Click({
     & $refreshDates
 })
 
-# ====== Import gigs.json (apply to all) ======
+# ====== Import gigs.json (apply to all) - only add new dates ======
 $btnImportGigs.Add_Click({
     if (-not (Test-Path $gigsJsonPath)) {
         [System.Windows.MessageBox]::Show("gigs.json not found at:`n$gigsJsonPath", "Error", "OK", "Error")
@@ -364,10 +368,10 @@ $btnImportGigs.Add_Click({
     foreach ($g in $gigs) {
         if ($null -ne $g.Date) {
             # Try parse various date formats robustly
+            $dt = $null
             try {
                 $dt = [DateTime]::Parse($g.Date)
             } catch {
-                # try parse exact yyyy-MM-dd
                 try { $dt = [DateTime]::ParseExact($g.Date, 'yyyy-MM-dd', $null) } catch { $dt = $null }
             }
             if ($dt) { $importDates += $dt.ToString('yyyy-MM-dd') }
@@ -380,9 +384,24 @@ $btnImportGigs.Add_Click({
         return
     }
 
-    # Confirm with user
-    $summary = "Import the following dates from gigs.json and apply to ALL people:`n`n"
-    $summary += ($importDates -join ", ")
+    # Gather all existing dates across all people in DATA.unavailableDates
+    $existingAll = @()
+    foreach ($prop in $data.unavailableDates.PSObject.Properties) {
+        $vals = @($data.unavailableDates.$($prop.Name))
+        if ($vals) { $existingAll += $vals }
+    }
+    $existingAll = ($existingAll | Sort-Object -Unique)
+
+    # Compute only-new dates (importDates - existingAll)
+    $newDates = $importDates | Where-Object { $existingAll -notcontains $_ }
+    if ($newDates.Count -eq 0) {
+        [System.Windows.MessageBox]::Show("All dates from gigs.json are already present in Dates.html. No changes needed.", "Info", "OK", "Information")
+        return
+    }
+
+    # Confirm with user listing only the new dates
+    $summary = "The following new dates from gigs.json will be added to ALL people:`n`n"
+    $summary += ($newDates -join ", ")
     $summary += "`n`nProceed?"
 
     $res = [System.Windows.MessageBox]::Show($summary, "Confirm Import gigs.json", "YesNo", "Question")
@@ -403,14 +422,14 @@ $btnImportGigs.Add_Click({
         return
     }
 
-    # Apply to all names
+    # Apply only the new dates to all names
     foreach ($nameToUpdate in $namesToUpdate) {
         if (-not $data.unavailableDates.PSObject.Properties.Name -contains $nameToUpdate) {
             $data.unavailableDates | Add-Member -MemberType NoteProperty -Name $nameToUpdate -Value @()
         }
         $existing = @()
         if ($data.unavailableDates.$nameToUpdate) { $existing = @($data.unavailableDates.$nameToUpdate) }
-        $combined = ($existing + $importDates) | Sort-Object -Unique
+        $combined = ($existing + $newDates) | Sort-Object -Unique
         $data.unavailableDates.$nameToUpdate = $combined
     }
 
@@ -429,9 +448,47 @@ $btnImportGigs.Add_Click({
         return
     }
 
-    [System.Windows.MessageBox]::Show("✅ Imported $($importDates.Count) dates from gigs.json and applied to all people.`nHTML updated successfully.", "Success", "OK", "Information")
+    [System.Windows.MessageBox]::Show("✅ Imported $($newDates.Count) new dates from gigs.json and applied to all people.`nHTML updated successfully.", "Success", "OK", "Information")
 
     # Refresh list if single person selected
+    & $refreshDates
+})
+
+# ====== Undo (restore backup) ======
+$btnUndo.Add_Click({
+    if (-not (Test-Path $jsonBackupPath)) {
+        [System.Windows.MessageBox]::Show("Backup file not found at:`n$jsonBackupPath", "Error", "OK", "Error")
+        return
+    }
+    try {
+        $backupJson = Get-Content $jsonBackupPath -Raw
+        $backupData = $backupJson | ConvertFrom-Json
+    } catch {
+        [System.Windows.MessageBox]::Show("Failed to read/parse backup: $($_.Exception.Message)", "Error", "OK", "Error")
+        return
+    }
+
+    $res = [System.Windows.MessageBox]::Show("Restore the backup JSON and overwrite Dates.html? This cannot be undone.", "Confirm Restore", "YesNo", "Warning")
+    if ($res -ne "Yes") { return }
+
+    try {
+        $newJson = ($backupData | ConvertTo-Json -Depth 10 -Compress)
+        $html = [Regex]::Replace(
+            $html,
+            'const\s+DATA\s*=\s*\{.*?\};',
+            "const DATA = $newJson;",
+            [System.Text.RegularExpressions.RegexOptions]::Singleline
+        )
+        Set-Content -Path $htmlPath -Value $html -Encoding UTF8
+
+        # reload data variable in memory
+        $data = $backupData
+    } catch {
+        [System.Windows.MessageBox]::Show("Failed to restore backup: $($_.Exception.Message)", "Error", "OK", "Error")
+        return
+    }
+
+    [System.Windows.MessageBox]::Show("Backup restored and Dates.html updated.", "Success", "OK", "Information")
     & $refreshDates
 })
 
