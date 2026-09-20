@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const version = "NSV090::CacheFirstSafe";
+  const version = "NSV091::CacheFirstSafe";
   const offlineUrl = "/offline.html";
   const offlineImage = "/offline.png"; // <-- add this to your precache
 
