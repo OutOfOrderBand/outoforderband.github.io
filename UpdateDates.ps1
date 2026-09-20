@@ -348,7 +348,7 @@ $btnAction.Add_Click({
     & $refreshDates
 })
 
-# ====== Import gigs.json (apply to all) - only add new dates ======
+# ====== Import gigs.json (apply to all) - only add dates that are NOT already present for ALL people ======
 $btnImportGigs.Add_Click({
     if (-not (Test-Path $gigsJsonPath)) {
         [System.Windows.MessageBox]::Show("gigs.json not found at:`n$gigsJsonPath", "Error", "OK", "Error")
@@ -367,7 +367,6 @@ $btnImportGigs.Add_Click({
     $importDates = @()
     foreach ($g in $gigs) {
         if ($null -ne $g.Date) {
-            # Try parse various date formats robustly
             $dt = $null
             try {
                 $dt = [DateTime]::Parse($g.Date)
@@ -384,24 +383,44 @@ $btnImportGigs.Add_Click({
         return
     }
 
-    # Gather all existing dates across all people in DATA.unavailableDates
-    $existingAll = @()
-    foreach ($prop in $data.unavailableDates.PSObject.Properties) {
-        $vals = @($data.unavailableDates.$($prop.Name))
-        if ($vals) { $existingAll += $vals }
-    }
-    $existingAll = ($existingAll | Sort-Object -Unique)
-
-    # Compute only-new dates (importDates - existingAll)
-    $newDates = $importDates | Where-Object { $existingAll -notcontains $_ }
-    if ($newDates.Count -eq 0) {
-        [System.Windows.MessageBox]::Show("All dates from gigs.json are already present in Dates.html. No changes needed.", "Info", "OK", "Information")
+    # Ensure names exist
+    $namesToUpdate = $data.names
+    if (-not $namesToUpdate -or $namesToUpdate.Count -eq 0) {
+        [System.Windows.MessageBox]::Show("No names found in DATA.names to apply imported dates to.", "Error", "OK", "Error")
         return
     }
 
-    # Confirm with user listing only the new dates
-    $summary = "The following new dates from gigs.json will be added to ALL people:`n`n"
-    $summary += ($newDates -join ", ")
+    # For each imported date, check whether it already exists for ALL people.
+    # If a date is already present for every name, skip it.
+    # Otherwise, include it in $datesToAdd and it will be applied to ALL people.
+    $datesToAdd = @()
+    foreach ($d in $importDates) {
+        $presentForAll = $true
+        foreach ($n in $namesToUpdate) {
+            $existsForName = $false
+            if ($data.unavailableDates.PSObject.Properties.Name -contains $n) {
+                $vals = @($data.unavailableDates.$n)
+                if ($vals -and ($vals -contains $d)) { $existsForName = $true }
+            }
+            if (-not $existsForName) {
+                $presentForAll = $false
+                break
+            }
+        }
+        if (-not $presentForAll) {
+            $datesToAdd += $d
+        }
+    }
+
+    $datesToAdd = $datesToAdd | Sort-Object -Unique
+    if ($datesToAdd.Count -eq 0) {
+        [System.Windows.MessageBox]::Show("All dates from gigs.json are already present for every person. No changes needed.", "Info", "OK", "Information")
+        return
+    }
+
+    # Confirm with user listing only the dates that will be added to all people
+    $summary = "The following dates from gigs.json are NOT present for every person and will be added to ALL people:`n`n"
+    $summary += ($datesToAdd -join ", ")
     $summary += "`n`nProceed?"
 
     $res = [System.Windows.MessageBox]::Show($summary, "Confirm Import gigs.json", "YesNo", "Question")
@@ -415,21 +434,14 @@ $btnImportGigs.Add_Click({
         return
     }
 
-    # Ensure names exist
-    $namesToUpdate = $data.names
-    if (-not $namesToUpdate -or $namesToUpdate.Count -eq 0) {
-        [System.Windows.MessageBox]::Show("No names found in DATA.names to apply imported dates to.", "Error", "OK", "Error")
-        return
-    }
-
-    # Apply only the new dates to all names
+    # Apply only the datesToAdd to all names
     foreach ($nameToUpdate in $namesToUpdate) {
         if (-not $data.unavailableDates.PSObject.Properties.Name -contains $nameToUpdate) {
             $data.unavailableDates | Add-Member -MemberType NoteProperty -Name $nameToUpdate -Value @()
         }
         $existing = @()
         if ($data.unavailableDates.$nameToUpdate) { $existing = @($data.unavailableDates.$nameToUpdate) }
-        $combined = ($existing + $newDates) | Sort-Object -Unique
+        $combined = ($existing + $datesToAdd) | Sort-Object -Unique
         $data.unavailableDates.$nameToUpdate = $combined
     }
 
@@ -448,7 +460,7 @@ $btnImportGigs.Add_Click({
         return
     }
 
-    [System.Windows.MessageBox]::Show("✅ Imported $($newDates.Count) new dates from gigs.json and applied to all people.`nHTML updated successfully.", "Success", "OK", "Information")
+    [System.Windows.MessageBox]::Show("✅ Imported $($datesToAdd.Count) dates from gigs.json and applied to all people.`nHTML updated successfully.", "Success", "OK", "Information")
 
     # Refresh list if single person selected
     & $refreshDates
