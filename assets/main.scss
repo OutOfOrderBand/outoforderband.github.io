@@ -504,16 +504,14 @@ footer {
 // =======================
 // Link Tree Button
 // =======================
-// =======================
-// Link Tree Button
-// =======================
 .ns-linktree-btn {
   background-color: $ooob-black;
-  border: 1px solid #fff;
+  border: 1px solid  $ooob-black;  
   text-transform: lowercase;
+  border-radius: 8px;
   font-size: 1.2em;
   line-height: 1em;
-  padding: 12px;
+  padding-top: 12px;
   &:hover {
     background-color: $ooob-black;
   }
