@@ -35,7 +35,7 @@
   <h1 class="ns-h1">Upcoming Gigs</h1>
 <ul>
   {{ $now := now }}
-  {{ range sort $.Site.Data.gigs "Date" "asc" }}
+  {{ range sort hugo.Data.gigs "Date" "asc" }}
     {{ if .Date }}
       {{ $gigDate := time .Date }}
       {{ if ge $gigDate $now }}

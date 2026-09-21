@@ -1,5 +1,5 @@
 baseURL = "https://outoforderband.co.uk"
-languageCode = "en-uk"
+locale = "en-GB"
 title = "Out Of Order Band"
 publishDir = "docs"
 staticDir = ["static"]
