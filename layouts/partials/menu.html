@@ -1,4 +1,4 @@
-    {{ range site.Data.menu }}
+    {{ range hugo.Data.menu }}
       <div class="pie {{ .pie }}" onclick="document.body.classList.remove('active')">
         <a href = "{{ .url }}">  
           <div class="pie-color {{ .color }}">
@@ -27,7 +27,7 @@
 </div>
 <nav class="main-menu-desktop" aria-label="Main menu">
   <ul class="main-menu-desktop-list">
-    {{ range site.Data.menu }}
+    {{ range hugo.Data.menu }}
       <li>
         <a href="{{ .url }}" class="main-menu-desktop-link">{{ .label }}</a>
       </li>
