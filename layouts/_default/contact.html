@@ -13,7 +13,7 @@
       our social media platforms
     </h4>
     <ul>
-      {{ range site.Data.contact }}
+      {{ range hugo.Data.contact }}
       <li>
         {{ partial (printf "icons/%s.html" .icon) . }}
         <span>

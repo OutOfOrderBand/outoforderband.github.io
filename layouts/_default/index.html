@@ -7,7 +7,7 @@
 </div>
 <div class="ns-gigs">
   <section class="gallery" aria-label="Band Videos">
-    {{ range site.Data.frontpagevideos }}
+    {{ range hugo.Data.frontpagevideos }}
     <figure>
       <a data-fancybox data-ratio="2" href="{{ .url }}">
         <span class="video-thumbnail">
