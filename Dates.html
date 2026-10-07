@@ -1,0 +1,621 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fri/Sat/Sun – Availability</title>
+
+  <!-- Prevent all caching -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --card: #1f2937;
+      --muted: #9ca3af;
+      --text: #e5e7eb;
+      --border: #374151;
+      --danger: #ef4444;
+      --ok: #22c55e;
+      --radius: 12px;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+    }
+
+    header {
+      padding: 14px clamp(12px, 3vw, 24px);
+      border-bottom: 1px solid var(--border);
+      background: #0b1222;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    header .sub {
+      color: var(--muted);
+      font-size: .9rem;
+      margin-top: 4px;
+    }
+
+    main {
+      padding: 12px clamp(12px, 3vw, 24px) 40px;
+    }
+
+    .year-section {
+      margin-bottom: 32px;
+    }
+
+    .year-header {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #60a5fa;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #374151;
+    }
+
+    .month {
+      margin-bottom: 22px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--panel);
+      overflow: hidden;
+    }
+
+    .month h2 {
+      margin: 0;
+      padding: 12px 14px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border);
+      background: #0b1222;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    .grid {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 600px;
+    }
+
+    .grid thead th {
+      background: #0b1222;
+      border-bottom: 1px solid var(--border);
+      padding: 10px 8px;
+      font-weight: 600;
+    }
+
+    .grid thead th.date-head {
+      text-align: left;
+    }
+
+    .grid thead th.name-head {
+      text-align: center;
+    }
+
+    .grid tbody td,
+    .grid thead th {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .grid tbody td {
+      padding: 8px;
+      vertical-align: middle;
+      text-align: center;
+    }
+
+    .datecell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: flex-start;
+    }
+
+    .dow {
+      color: var(--muted);
+      width: 3.2rem;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      font-size: .75rem;
+      text-align: left;
+    }
+
+    .dtx {
+      font-weight: 500;
+    }
+
+    .cell-bad {
+      background: rgba(239, 68, 68, 0.16);
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .cell-ok {
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--ok);
+      font-weight: 700;
+    }
+
+    .mark {
+      font-size: 1rem;
+      line-height: 1;
+      display: inline-block;
+    }
+
+    @media (max-width: 599.98px) {
+      html,
+      body {
+        overflow-x: hidden;
+      }
+
+      .table-wrap {
+        overflow-x: visible;
+      }
+
+      .grid,
+      .grid thead,
+      .grid tbody,
+      .grid th,
+      .grid td,
+      .grid tr {
+        display: block;
+      }
+
+      .grid {
+        min-width: 0;
+        width: 100%;
+      }
+
+      .grid thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+      }
+
+      .grid tr {
+        margin: 12px 0;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: var(--card);
+      }
+
+      .grid td.date {
+        border-bottom: 1px solid var(--border);
+        padding: 10px 12px;
+        text-align: left;
+      }
+
+      .datecell .dow {
+        width: auto;
+        font-size: .72rem;
+        letter-spacing: .06em;
+      }
+
+      .datecell .dtx {
+        font-size: 1rem;
+      }
+
+      .grid td.person {
+        border: none;
+        border-top: 1px solid var(--border);
+        padding: 10px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        text-align: right;
+        min-width: 0;
+      }
+
+      .grid td.person:first-of-type {
+        border-top: 1px solid var(--border);
+      }
+
+      .grid td.person::before {
+        content: attr(data-label);
+        color: var(--muted);
+        font-weight: 600;
+        margin-right: 12px;
+        text-align: left;
+        flex: 1 1 auto;
+        min-width: 0;
+        white-space: normal;
+        word-break: break-word;
+      }
+
+      .mark {
+        font-size: 1.15rem;
+        flex: 0 0 auto;
+      }
+    }
+
+    @media print {
+      header {
+        display: none !important;
+      }
+
+      .month {
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Friday/Saturday/Sunday – Availability</h1>
+    <div class="sub">Green ✓ = free, Red X = can't make it.</div>
+  </header>
+
+  <main>
+    <div id="calendar"></div>
+  </main>
+
+  <script>
+    const DOW = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const DEFAULT_NAMES = ["Clive", "Darren", "Martin", "Matt"];
+
+    function weekendDatesForYear(year) {
+      const out = [];
+      const d = new Date(year, 0, 1);
+      while (d.getFullYear() === year) {
+        const g = d.getDay();
+        if (g === 5 || g === 6 || g === 0) out.push(new Date(d));
+        d.setDate(d.getDate() + 1);
+      }
+      return out;
+    }
+
+    function fmtDate(d) {
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    }
+
+    function parseDate(str) {
+      const [y, m, d] = str.split("-").map(Number);
+      return new Date(y, m - 1, d);
+    }
+
+    let NAMES = [...DEFAULT_NAMES];
+    let UNAVAIL = {};
+
+    // ✅ UPDATED FUNCTION BELOW
+    function render() {
+      const root = document.getElementById("calendar");
+      root.innerHTML = "";
+
+      const allDates = Object.keys(UNAVAIL).sort();
+      if (allDates.length === 0) return;
+
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const currentMonth = now.getMonth() + 1;
+
+      // 👇 Filter out months before the current one
+      const filteredDates = allDates.filter(dt => {
+        const [y, m] = dt.split("-").map(Number);
+        return y > currentYear || (y === currentYear && m >= currentMonth);
+      });
+
+      const byYear = new Map();
+
+      filteredDates.forEach(dt => {
+        const [year, month] = dt.split("-").map(Number);
+        if (!byYear.has(year)) byYear.set(year, new Map());
+        const yearMap = byYear.get(year);
+        if (!yearMap.has(month)) yearMap.set(month, []);
+        yearMap.get(month).push(dt);
+      });
+
+      [...byYear.keys()].sort((a, b) => a - b).forEach(year => {
+        const yearSection = document.createElement("div");
+        yearSection.className = "year-section";
+
+        const yearHeader = document.createElement("h1");
+        yearHeader.className = "year-header";
+        yearHeader.textContent = year;
+        yearSection.appendChild(yearHeader);
+
+        const monthMap = byYear.get(year);
+
+        [...monthMap.keys()].sort((a, b) => a - b).forEach(month => {
+          const sec = document.createElement("section");
+          sec.className = "month";
+
+          const h2 = document.createElement("h2");
+          h2.textContent = `${MONTHS[month - 1]} ${year}`;
+          sec.appendChild(h2);
+
+          const wrap = document.createElement("div");
+          wrap.className = "table-wrap";
+
+          const table = document.createElement("table");
+          table.className = "grid";
+
+          const thead = document.createElement("thead");
+          const thr = document.createElement("tr");
+          const thDate = document.createElement("th");
+          thDate.textContent = "Date";
+          thDate.className = "date-head";
+          thr.appendChild(thDate);
+          NAMES.forEach(n => {
+            const th = document.createElement("th");
+            th.textContent = n;
+            th.className = "name-head";
+            thr.appendChild(th);
+          });
+          thead.appendChild(thr);
+          table.appendChild(thead);
+
+          const tbody = document.createElement("tbody");
+          monthMap.get(month).forEach(dt => {
+            const dd = parseDate(dt);
+            const [y, m, d] = dt.split("-").map(Number);
+
+            const tr = document.createElement("tr");
+
+            const td0 = document.createElement("td");
+            td0.className = "date";
+            const wrapDate = document.createElement("div");
+            wrapDate.className = "datecell";
+            const dow = document.createElement("span");
+            dow.className = "dow";
+            dow.textContent = DOW[dd.getDay()];
+            const dtx = document.createElement("span");
+            dtx.className = "dtx";
+            dtx.textContent = `${String(d).padStart(2, "0")} ${MONTHS[m - 1].slice(0, 3)} ${y}`;
+            wrapDate.append(dow, dtx);
+            td0.appendChild(wrapDate);
+            tr.appendChild(td0);
+
+            NAMES.forEach(name => {
+              const td = document.createElement("td");
+              td.className = "person";
+              td.dataset.label = name;
+              const isBad = !!(UNAVAIL[dt] && UNAVAIL[dt][name]);
+              if (isBad) {
+                td.classList.add("cell-bad");
+                td.innerHTML = '<span class="mark">X</span>';
+                td.setAttribute("aria-label", `${name} is unavailable on ${dt}`);
+              } else {
+                td.classList.add("cell-ok");
+                td.innerHTML = '<span class="mark">✓</span>';
+                td.setAttribute("aria-label", `${name} is available on ${dt}`);
+              }
+              tr.appendChild(td);
+            });
+
+            tbody.appendChild(tr);
+          });
+          table.appendChild(tbody);
+
+          wrap.appendChild(table);
+          sec.appendChild(wrap);
+          yearSection.appendChild(sec);
+        });
+
+        root.appendChild(yearSection);
+      });
+    }
+
+    function loadData(obj) {
+      const names = Array.isArray(obj?.names) && obj.names.length ? obj.names.slice(0, 4) : [...DEFAULT_NAMES];
+      while (names.length < 4) names.push(`Person ${String.fromCharCode(65 + names.length)}`);
+      if (names.length > 4) names.length = 4;
+      NAMES = names;
+
+      let minYear = Infinity;
+      let maxYear = -Infinity;
+
+      const listKeys = ["unavailableDates", "busyDates"];
+      for (const key of listKeys) {
+        if (obj && obj[key] && typeof obj[key] === "object") {
+          for (const [name, dates] of Object.entries(obj[key])) {
+            if (!Array.isArray(dates)) continue;
+            for (const dt of dates) {
+              try {
+                const year = parseInt(dt.split("-")[0]);
+                if (year < minYear) minYear = year;
+                if (year > maxYear) maxYear = year;
+              } catch (e) {}
+            }
+          }
+        }
+      }
+
+      if (obj && obj.availability && typeof obj.availability === "object") {
+        for (const dt of Object.keys(obj.availability)) {
+          try {
+            const year = parseInt(dt.split("-")[0]);
+            if (year < minYear) minYear = year;
+            if (year > maxYear) maxYear = year;
+          } catch (e) {}
+        }
+      }
+
+      if (minYear === Infinity) minYear = new Date().getFullYear();
+      if (maxYear === -Infinity) maxYear = minYear;
+
+      const allWeekendDates = [];
+      for (let year = minYear; year <= maxYear; year++) {
+        allWeekendDates.push(...weekendDatesForYear(year));
+      }
+
+      UNAVAIL = Object.fromEntries(allWeekendDates.map(d => [fmtDate(d), {}]));
+
+      for (const key of listKeys) {
+        if (obj && obj[key] && typeof obj[key] === "object") {
+          for (const [name, dates] of Object.entries(obj[key])) {
+            if (!NAMES.includes(name) || !Array.isArray(dates)) continue;
+            for (const dt of dates) {
+              if (UNAVAIL[dt]) UNAVAIL[dt][name] = true;
+            }
+          }
+        }
+      }
+
+      if (obj && obj.availability && typeof obj.availability === "object") {
+        for (const [dt, row] of Object.entries(obj.availability)) {
+          if (!UNAVAIL[dt]) continue;
+          for (const name of NAMES) {
+            if (row && Object.prototype.hasOwnProperty.call(row, name) && row[name] === false) {
+              UNAVAIL[dt][name] = true;
+            }
+          }
+        }
+      }
+
+      render();
+    }
+
+    const DATA = {"names":["Clive","Darren","Martin","Matt"],"unavailableDates":{"Clive":["2018-10-27","2018-12-14","2019-01-10","2019-02-09","2019-03-07","2019-03-15","2019-03-22","2019-04-20","2019-04-27","2019-05-10","2019-05-17","2019-06-09","2019-06-14","2019-07-19","2019-09-13","2019-09-28","2019-11-16","2019-11-30","2020-03-27","2020-06-06","2020-07-10","2020-10-16","2020-11-28","2021-11-13","2021-12-04","2022-01-08","2022-08-27","2022-11-18","2023-05-26","2023-06-16","2023-07-01","2023-08-11","2023-09-03","2023-09-30","2023-10-07","2023-10-21","2023-10-28","2023-11-25","2023-12-10","2024-02-07","2024-02-16","2024-04-05","2024-04-26","2024-05-17","2024-05-18","2024-06-01","2024-06-28","2024-07-13","2024-08-02","2024-08-24","2024-09-27","2024-11-15","2024-12-01","2025-01-10","2025-01-11","2025-02-15","2025-02-23","2025-04-13","2025-04-25","2025-04-26","2025-05-10","2025-07-11","2025-07-26","2025-08-22","2025-09-06","2025-10-05","2025-11-22","2025-12-06","2025-12-31","2026-01-11","2026-01-17","2026-01-21","2026-02-21","2026-03-01","2026-03-02","2026-03-03","2026-03-04","2026-03-05","2026-03-06","2026-03-07","2026-03-08","2026-03-09","2026-03-10","2026-03-11","2026-03-12","2026-03-13","2026-03-14","2026-03-15","2026-03-16","2026-03-17","2026-03-18","2026-03-19","2026-03-20","2026-03-21","2026-03-22","2026-03-23","2026-03-24","2026-03-25","2026-03-26","2026-03-27","2026-03-28","2026-03-29","2026-03-30","2026-03-31","2026-04-01","2026-04-02","2026-04-03","2026-04-04","2026-04-05","2026-04-06","2026-04-07","2026-04-08","2026-04-09","2026-04-10","2026-04-11","2026-04-12","2026-04-13","2026-04-14","2026-04-15","2026-04-16","2026-04-17","2026-04-18","2026-04-19","2026-04-20","2026-04-21","2026-04-22","2026-04-23","2026-04-24","2026-04-25","2026-04-26","2026-04-27","2026-04-28","2026-04-29","2026-04-30","2026-05-15","2026-05-17","2026-05-24","2026-05-30","2026-05-31","2026-06-01","2026-06-02","2026-06-03","2026-06-04","2026-06-05","2026-06-06","2026-06-07","2026-06-08","2026-06-09","2026-06-10","2026-06-11","2026-06-12","2026-06-13","2026-06-14","2026-06-18","2026-06-20","2026-06-22","2026-07-18","2026-07-20","2026-07-24","2026-07-26","2026-08-09","2026-08-21","2026-08-22","2026-08-23","2026-09-19","2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-11","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-18","2026-10-19","2026-10-20","2026-10-21","2026-10-22","2026-10-23","2026-10-24","2026-10-25","2026-10-26","2026-10-27","2026-10-28","2026-10-29","2026-10-30","2026-10-31","2026-11-22","2026-12-25","2026-12-26","2027-03-19","2027-04-09","2027-04-24","2027-06-05","2027-07-16","2027-07-24","2027-08-06","2027-12-25"],"Darren":["2018-10-27","2018-12-14","2019-01-10","2019-02-09","2019-03-07","2019-03-15","2019-03-22","2019-04-20","2019-04-27","2019-05-10","2019-05-17","2019-06-09","2019-06-14","2019-07-19","2019-09-13","2019-09-28","2019-11-16","2019-11-30","2020-03-27","2020-06-06","2020-07-10","2020-10-16","2020-11-28","2021-11-13","2021-12-04","2022-01-08","2022-08-27","2022-11-18","2023-05-26","2023-06-16","2023-07-01","2023-08-11","2023-09-03","2023-09-30","2023-10-07","2023-10-21","2023-10-28","2023-11-25","2023-12-10","2024-02-07","2024-02-16","2024-04-05","2024-04-26","2024-05-17","2024-05-18","2024-06-01","2024-06-28","2024-07-13","2024-08-02","2024-08-24","2024-09-27","2024-11-15","2024-12-01","2025-01-10","2025-01-11","2025-02-15","2025-02-23","2025-04-13","2025-04-25","2025-04-26","2025-05-10","2025-07-11","2025-07-26","2025-08-22","2025-09-06","2025-10-05","2025-11-22","2025-12-06","2025-12-31","2026-01-11","2026-01-17","2026-02-13","2026-02-14","2026-02-15","2026-03-01","2026-03-02","2026-03-03","2026-03-04","2026-03-05","2026-03-06","2026-03-07","2026-03-08","2026-03-09","2026-03-10","2026-03-11","2026-03-12","2026-03-13","2026-03-14","2026-03-15","2026-03-16","2026-03-17","2026-03-18","2026-03-19","2026-03-20","2026-03-21","2026-03-22","2026-03-23","2026-03-24","2026-03-25","2026-03-26","2026-03-27","2026-03-28","2026-03-29","2026-03-30","2026-03-31","2026-04-01","2026-04-02","2026-04-03","2026-04-04","2026-04-05","2026-04-06","2026-04-07","2026-04-08","2026-04-09","2026-04-10","2026-04-11","2026-04-12","2026-04-13","2026-04-14","2026-04-15","2026-04-16","2026-04-17","2026-04-18","2026-04-19","2026-04-20","2026-04-21","2026-04-22","2026-04-23","2026-04-24","2026-04-25","2026-04-26","2026-04-27","2026-04-28","2026-04-29","2026-04-30","2026-05-15","2026-05-17","2026-05-24","2026-06-12","2026-06-13","2026-06-14","2026-06-18","2026-06-20","2026-06-22","2026-06-26","2026-06-27","2026-06-28","2026-07-04","2026-07-05","2026-07-06","2026-07-07","2026-07-08","2026-07-09","2026-07-10","2026-07-11","2026-07-12","2026-07-18","2026-07-24","2026-07-26","2026-08-22","2026-08-23","2026-08-24","2026-08-25","2026-08-26","2026-08-27","2026-08-28","2026-08-29","2026-08-30","2026-09-18","2026-09-19","2026-09-20","2026-09-21","2026-09-22","2026-09-23","2026-09-24","2026-09-25","2026-09-26","2026-09-27","2026-10-02","2026-10-03","2026-10-04","2026-10-05","2026-10-06","2026-10-07","2026-10-08","2026-10-09","2026-10-10","2026-10-11","2026-10-12","2026-10-13","2026-10-14","2026-10-15","2026-10-16","2026-10-17","2026-10-18","2026-10-19","2026-10-20","2026-10-21","2026-10-22","2026-10-23","2026-10-24","2026-10-25","2026-10-26","2026-10-27","2026-10-28","2026-10-29","2026-10-30","2026-10-31","2026-11-21","2026-11-22","2026-12-11","2026-12-25","2026-12-26","2027-01-29","2027-01-30","2027-01-31","2027-03-05","2027-03-06","2027-03-07","2027-03-08","2027-03-09","2027-03-10","2027-03-11","2027-03-12","2027-03-13","2027-03-14","2027-03-15","2027-03-16","2027-03-26","2027-03-27","2027-03-28","2027-03-29","2027-04-09","2027-04-24","2027-06-05","2027-07-16","2027-07-24","2027-08-06","2027-08-13","2027-08-14","2027-08-15","2027-08-21","2027-08-22","2027-08-28","2027-08-29","2027-12-25"],"Martin":["2018-10-27","2018-12-14","2019-01-10","2019-02-09","2019-03-07","2019-03-15","2019-03-22","2019-04-20","2019-04-27","2019-05-10","2019-05-17","2019-06-09","2019-06-14","2019-07-19","2019-09-13","2019-09-28","2019-11-16","2019-11-30","2020-03-27","2020-06-06","2020-07-10","2020-10-16","2020-11-28","2021-11-13","2021-12-04","2022-01-08","2022-08-27","2022-11-18","2023-05-26","2023-06-16","2023-07-01","2023-08-11","2023-09-03","2023-09-30","2023-10-07","2023-10-21","2023-10-28","2023-11-25","2023-12-10","2024-02-07","2024-02-16","2024-04-05","2024-04-26","2024-05-17","2024-05-18","2024-06-01","2024-06-28","2024-07-13","2024-08-02","2024-08-24","2024-09-27","2024-11-15","2024-12-01","2025-01-10","2025-01-11","2025-02-15","2025-02-23","2025-04-13","2025-04-25","2025-04-26","2025-05-10","2025-07-11","2025-07-26","2025-08-22","2025-09-06","2025-10-05","2025-11-22","2025-12-06","2025-12-31","2026-01-11","2026-01-30","2026-02-06","2026-02-07","2026-02-08","2026-02-14","2026-02-27","2026-03-01","2026-03-13","2026-03-14","2026-04-03","2026-04-04","2026-04-05","2026-04-06","2026-04-11","2026-04-18","2026-05-01","2026-05-15","2026-05-17","2026-05-22","2026-05-24","2026-05-30","2026-06-06","2026-06-07","2026-06-08","2026-06-09","2026-06-10","2026-06-11","2026-06-12","2026-06-13","2026-06-14","2026-06-15","2026-06-16","2026-06-17","2026-06-18","2026-06-20","2026-06-22","2026-06-27","2026-06-29","2026-06-30","2026-07-04","2026-07-11","2026-07-24","2026-07-25","2026-07-26","2026-08-02","2026-08-07","2026-08-08","2026-08-13","2026-08-14","2026-08-15","2026-08-16","2026-08-17","2026-08-29","2026-09-04","2026-09-05","2026-09-06","2026-09-11","2026-09-12","2026-09-13","2026-10-03","2026-10-09","2026-10-17","2026-11-06","2026-11-13","2026-11-14","2026-11-22","2026-12-25","2026-12-26","2027-02-05","2027-02-26","2027-03-20","2027-04-02","2027-04-09","2027-04-17","2027-04-24","2027-04-25","2027-05-07","2027-05-15","2027-05-22","2027-06-05","2027-06-27","2027-07-01","2027-07-02","2027-07-03","2027-07-04","2027-07-05","2027-07-06","2027-07-07","2027-07-08","2027-07-09","2027-07-10","2027-07-11","2027-07-12","2027-07-13","2027-07-14","2027-07-16","2027-07-24","2027-07-25","2027-08-06","2027-08-09","2027-08-10","2027-08-11","2027-08-12","2027-08-13","2027-08-14","2027-08-15","2027-08-16","2027-08-17","2027-08-18","2027-08-19","2027-09-10","2027-09-11","2027-09-12","2027-11-07","2027-11-19","2027-12-25"],"Matt":["2018-10-27","2018-12-14","2019-01-10","2019-02-09","2019-03-07","2019-03-15","2019-03-22","2019-04-20","2019-04-27","2019-05-10","2019-05-17","2019-06-09","2019-06-14","2019-07-19","2019-09-13","2019-09-28","2019-11-16","2019-11-30","2020-03-27","2020-06-06","2020-07-10","2020-10-16","2020-11-28","2021-11-13","2021-12-04","2022-01-08","2022-08-27","2022-11-18","2023-05-26","2023-06-16","2023-07-01","2023-08-11","2023-09-03","2023-09-30","2023-10-07","2023-10-21","2023-10-28","2023-11-25","2023-12-10","2024-02-07","2024-02-16","2024-04-05","2024-04-26","2024-05-17","2024-05-18","2024-06-01","2024-06-28","2024-07-13","2024-08-02","2024-08-24","2024-09-27","2024-11-15","2024-12-01","2025-01-10","2025-01-11","2025-02-15","2025-02-23","2025-04-13","2025-04-25","2025-04-26","2025-05-10","2025-07-11","2025-07-26","2025-08-22","2025-09-06","2025-10-05","2025-11-22","2025-12-06","2025-12-13","2025-12-31","2026-01-11","2026-03-07","2026-03-14","2026-04-04","2026-04-18","2026-05-02","2026-05-03","2026-05-10","2026-05-15","2026-05-17","2026-05-23","2026-05-24","2026-06-06","2026-06-12","2026-06-13","2026-06-14","2026-06-18","2026-06-20","2026-06-22","2026-06-26","2026-06-27","2026-06-28","2026-07-11","2026-07-24","2026-07-26","2026-07-31","2026-08-01","2026-08-08","2026-08-14","2026-08-15","2026-08-16","2026-08-21","2026-08-22","2026-08-23","2026-08-28","2026-08-29","2026-08-30","2026-09-12","2026-09-19","2026-09-26","2026-10-03","2026-10-09","2026-10-17","2026-10-31","2026-11-22","2026-11-28","2026-12-05","2026-12-12","2026-12-18","2026-12-19","2026-12-20","2026-12-21","2026-12-25","2026-12-26","2027-01-15","2027-01-30","2027-03-05","2027-04-09","2027-04-24","2027-06-05","2027-06-11","2027-06-12","2027-06-13","2027-06-19","2027-07-16","2027-07-24","2027-07-25","2027-08-06","2027-08-28","2027-12-25"]}};
+
+    loadData(DATA);
+  </script>
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
