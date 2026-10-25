@@ -33,7 +33,7 @@ jobs:
         env:
           # If you want to fetch the live page instead of reading from repo,
           # set PAGE_URL here and the script will curl it.
-          PAGE_URL: ${{ secrets.PAGE_URL }}
+          # PAGE_URL: ${{ secrets.PAGE_URL }}
         continue-on-error: false
 
       - name: Show diff in summary
