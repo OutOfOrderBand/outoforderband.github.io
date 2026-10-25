@@ -7,6 +7,7 @@ const cheerio = require("cheerio");
 const DATA_FILE = path.join("data", "data.json");
 const DIFF_FILE = path.join(".", "diff.txt");
 
+// Canonicalize object keys for stable comparison
 function canonicalize(obj) {
   if (Array.isArray(obj)) {
     return obj.map(canonicalize);
@@ -20,159 +21,141 @@ function canonicalize(obj) {
   return obj;
 }
 
+// Load HTML from repo
 function loadHtmlFromRepo() {
-  // Adjust this path to the HTML file in your repo that contains DATA
-  const htmlPath = path.join("docs", "Dates.html"); // example path
+  const htmlPath = path.join("docs", "Dates.html");
   if (fs.existsSync(htmlPath)) {
     return fs.readFileSync(htmlPath, "utf8");
   }
   return null;
 }
 
+// Load HTML from URL (fallback)
 function loadHtmlFromUrl(url) {
   try {
-    const curl = execSync(`curl -sL "${url}"`, {
+    return execSync(`curl -sL "${url}"`, {
       encoding: "utf8",
       maxBuffer: 10 * 1024 * 1024,
     });
-    return curl;
   } catch (e) {
     console.error("Failed to fetch URL", e.message);
     return null;
   }
 }
 
+// Extract DATA object from HTML
 function extractDataFromHtml(html) {
   const $ = cheerio.load(html);
-  // Strategy: find script tags and search for "var DATA =" or "DATA ="
   const scripts = $("script")
     .toArray()
     .map((s) => $(s).html())
     .filter(Boolean);
+
   for (const s of scripts) {
     const m = s.match(/(?:var\s+)?DATA\s*=\s*(\{[\s\S]*\});?/);
     if (m) {
       const jsonText = m[1];
       try {
-        // Some pages may use single quotes or trailing commas; try to sanitize
         const cleaned = jsonText
-          .replace(/(['"])?([a-zA-Z0-9_]+)\1\s*:/g, '"$2":') // ensure keys quoted
+          .replace(/(['"])?([a-zA-Z0-9_]+)\1\s*:/g, '"$2":')
           .replace(/,\s*}/g, "}")
           .replace(/,\s*]/g, "]");
         return JSON.parse(cleaned);
       } catch (e) {
         try {
-          return eval("(" + jsonText + ")"); // fallback (risky) but works for many JS objects
+          return eval("(" + jsonText + ")");
         } catch (err) {
           console.error("Failed to parse DATA JSON:", err.message);
         }
       }
     }
   }
+
   throw new Error("DATA object not found in HTML");
 }
 
-function diffObjects(oldArr, newArr) {
-  const added = [];
-  const removed = [];
-  const changed = [];
+// Diff unavailable dates per band member
+function diffUnavailable(oldObj, newObj) {
+  const diff = {};
 
-  // Convert arrays into maps keyed by date
-  const oldMap = new Map(oldArr.map(item => [item.date, item]));
-  const newMap = new Map(newArr.map(item => [item.date, item]));
+  for (const member of Object.keys(newObj)) {
+    const oldDates = new Set(oldObj?.[member] || []);
+    const newDates = new Set(newObj[member] || []);
 
-  // Check for added or changed
-  for (const [date, newItem] of newMap.entries()) {
-    if (!oldMap.has(date)) {
-      added.push(newItem);
-    } else {
-      const oldItem = oldMap.get(date);
-      if (JSON.stringify(oldItem) !== JSON.stringify(newItem)) {
-        changed.push({ date, old: oldItem, new: newItem });
-      }
+    const added = [...newDates].filter((d) => !oldDates.has(d));
+    const removed = [...oldDates].filter((d) => !newDates.has(d));
+
+    if (added.length || removed.length) {
+      diff[member] = { added, removed };
     }
   }
 
-  // Check for removed
-  for (const [date, oldItem] of oldMap.entries()) {
-    if (!newMap.has(date)) {
-      removed.push(oldItem);
-    }
-  }
-
-  return { added, removed, changed };
+  return diff;
 }
-
 
 (async function main() {
   try {
     let html = null;
     const pageUrl = process.env.PAGE_URL;
-    if (pageUrl) {
-      console.log("Fetching page from URL:", pageUrl);
-      html = loadHtmlFromUrl(pageUrl);
-    } else {
-      html = loadHtmlFromRepo();
-    }
+
+    html = pageUrl ? loadHtmlFromUrl(pageUrl) : loadHtmlFromRepo();
     if (!html) throw new Error("No HTML source available");
 
     const rawData = extractDataFromHtml(html);
-    const newData = canonicalize(rawData);
 
-    let oldData = null;
+    // Extract unavailableDates object
+    const newData = canonicalize(rawData.unavailableDates);
+
+    // Load previous data.json
+    let oldData = {};
     if (fs.existsSync(DATA_FILE)) {
       try {
-        oldData = JSON.parse(fs.readFileSync(DATA_FILE, "utf8"));
+        oldData = JSON.parse(fs.readFileSync(DATA_FILE, "utf8")).unavailableDates;
       } catch (e) {
         console.warn("Failed to parse existing data.json, treating as empty");
       }
     }
 
-    const diff = diffObjects(oldData, newData);
+    // Compute diff
+    const diff = diffUnavailable(oldData, newData);
+    const changed = Object.keys(diff).length > 0;
 
-    const changed =
-      diff.added.length || diff.removed.length || diff.changed.length
-        ? true
-        : false;
-
-    // Ensure data directory exists
+    // Save updated data.json
     fs.mkdirSync(path.dirname(DATA_FILE), { recursive: true });
-    fs.writeFileSync(DATA_FILE, JSON.stringify(newData, null, 2), "utf8");
+    fs.writeFileSync(
+      DATA_FILE,
+      JSON.stringify({ unavailableDates: newData }, null, 2),
+      "utf8"
+    );
 
-    // Write a human readable diff
+    // Write human-readable diff.txt
     const lines = [];
-    if (diff.added.length) {
-      lines.push("Added:");
-      diff.added.forEach((a) => lines.push(JSON.stringify(a)));
+    if (!changed) {
+      lines.push("No changes detected.");
+    } else {
+      for (const member of Object.keys(diff)) {
+        lines.push(`=== ${member} ===`);
+        if (diff[member].added.length) {
+          lines.push("Added:");
+          diff[member].added.forEach((d) => lines.push(`  + ${d}`));
+        }
+        if (diff[member].removed.length) {
+          lines.push("Removed:");
+          diff[member].removed.forEach((d) => lines.push(`  - ${d}`));
+        }
+        lines.push("");
+      }
     }
-    if (diff.removed.length) {
-      lines.push("Removed:");
-      diff.removed.forEach((r) => lines.push(JSON.stringify(r)));
-    }
-    if (diff.changed.length) {
-      lines.push("Changed:");
-      diff.changed.forEach((c) =>
-        lines.push(
-          `${c.key}: ${JSON.stringify(c.old)} -> ${JSON.stringify(c.new)}`,
-        ),
-      );
-    }
-    if (!lines.length) lines.push("No changes detected.");
-
-    // Write structured JSON diff for HTML email formatting
-    const diffJson = {
-      added: diff.added,
-      removed: diff.removed,
-      changed: diff.changed,
-    };
-
-    fs.writeFileSync("diff.json", JSON.stringify(diffJson, null, 2), "utf8");
 
     fs.writeFileSync(DIFF_FILE, lines.join("\n"), "utf8");
 
-    // Export output for GitHub Actions
+    // Write structured diff.json for HTML email
+    fs.writeFileSync("diff.json", JSON.stringify(diff, null, 2), "utf8");
+
+    // Output for GitHub Actions
     console.log(`::set-output name=changed::${changed ? "true" : "false"}`);
     process.exit(0);
+
   } catch (err) {
     console.error("Error in compareDates.js:", err);
     process.exit(2);
