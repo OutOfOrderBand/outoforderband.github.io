@@ -83,7 +83,7 @@ jobs:
             --data "$(jq -n --arg subj "$SUBJECT" --arg html "$HTML" --arg to "$ALERT_TO" '
               {
                 personalizations: [{ to: [{ email: $to }] }],
-                from: { email: "noreply@yourdomain.com" },
+                from: { email: "hi@normansolutions.co.uk" },
                 subject: $subj,
                 content: [{ type: "text/html", value: $html }]
               }
