@@ -67,7 +67,7 @@ jobs:
             --header 'Content-Type: application/json' \
             --data "$(jq -n --arg subj "$SUBJECT" --arg body "$BODY" --arg to "$ALERT_TO" '{
               personalizations: [{ to: [{ email: $to }] }],
-              from: { email: "noreply@yourdomain.com" },
+              from: { email: "hi@normansolutions.co.uk" },
               subject: $subj,
               content: [{ type: "text/plain", value: $body }]
             }')"
