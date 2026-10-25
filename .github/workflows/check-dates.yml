@@ -2,7 +2,7 @@ name: Check Dates and Notify
 
 on:
   schedule:
-    - cron: '35 19 * * *' # daily at 19:35 UTC
+    - cron: '40 20 * * *' # daily at 19:35 UTC
   push:
     branches: [ main ]
 
