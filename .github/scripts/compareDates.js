@@ -22,7 +22,7 @@ function canonicalize(obj) {
 
 function loadHtmlFromRepo() {
   // Adjust this path to the HTML file in your repo that contains DATA
-  const htmlPath = path.join("site", "dates.html"); // example path
+  const htmlPath = path.join("docs", "Dates.html"); // example path
   if (fs.existsSync(htmlPath)) {
     return fs.readFileSync(htmlPath, "utf8");
   }
