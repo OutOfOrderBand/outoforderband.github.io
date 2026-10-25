@@ -58,19 +58,41 @@ jobs:
       - name: Send email via SendGrid if changed
         if: steps.compare.outputs.changed == 'true'
         run: |
-          DIFF=$(cat diff.txt)
-          SUBJECT="Dates changed on repo: $(git rev-parse --abbrev-ref HEAD)"
-          BODY="Dates changed. Summary:\n\n$DIFF"
+          DIFF_JSON=$(cat diff.json)
+
+          HTML=$(jq -n --argjson diff "$DIFF_JSON" '
+            "<h2 style=\"font-family:Arial;\">Gig Date Changes</h2>" +
+            (if ($diff.added | length) > 0 then
+              "<h3 style=\"color:green;\">Added</h3><ul>" +
+              (($diff.added | map("<li><strong>\(.date)</strong> – \(.venue)</li>")) | join("")) +
+              "</ul>"
+            else "" end) +
+            (if ($diff.removed | length) > 0 then
+              "<h3 style=\"color:red;\">Removed</h3><ul>" +
+              (($diff.removed | map("<li><strong>\(.date)</strong> – \(.venue)</li>")) | join("")) +
+              "</ul>"
+            else "" end) +
+            (if ($diff.changed | length) > 0 then
+              "<h3 style=\"color:orange;\">Changed</h3><ul>" +
+              (($diff.changed | map("<li><strong>\(.key)</strong>: \(.old) → \(.new)</li>")) | join("")) +
+              "</ul>"
+            else "" end)
+          ')
+
+          SUBJECT="Gig dates updated"
+
           curl -s --request POST \
             --url https://api.sendgrid.com/v3/mail/send \
             --header "Authorization: Bearer $SENDGRID_API_KEY" \
             --header 'Content-Type: application/json' \
-            --data "$(jq -n --arg subj "$SUBJECT" --arg body "$BODY" --arg to "$ALERT_TO" '{
-              personalizations: [{ to: [{ email: $to }] }],
-              from: { email: "hi@normansolutions.co.uk" },
-              subject: $subj,
-              content: [{ type: "text/plain", value: $body }]
-            }')"
+            --data "$(jq -n --arg subj "$SUBJECT" --arg html "$HTML" --arg to "$ALERT_TO" '
+              {
+                personalizations: [{ to: [{ email: $to }] }],
+                from: { email: "noreply@yourdomain.com" },
+                subject: $subj,
+                content: [{ type: "text/html", value: $html }]
+              }
+            ')"
         env:
           SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
           ALERT_TO: ${{ secrets.ALERT_TO }}
