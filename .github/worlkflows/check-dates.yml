@@ -1,0 +1,68 @@
+name: Check Dates and Notify
+
+on:
+  schedule:
+    - cron: '0 8 * * *' # daily at 08:00 UTC
+  push:
+    branches: [ main ]
+
+jobs:
+  check-dates:
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.compare.outputs.changed }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install deps
+        run: npm ci
+        working-directory: .
+
+      - name: Run compare script
+        id: compare
+        run: |
+          node .github/scripts/compareDates.js
+        env:
+          # If you want to fetch the live page instead of reading from repo,
+          # set PAGE_URL here and the script will curl it.
+          PAGE_URL: ${{ secrets.PAGE_URL }}
+        continue-on-error: false
+
+      - name: Commit updated data.json if changed
+        if: steps.compare.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/data.json
+          git commit -m "Update normalized data.json from compareDates.js" || echo "no changes to commit"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Send email via SendGrid if changed
+        if: steps.compare.outputs.changed == 'true'
+        run: |
+          DIFF=$(cat diff.txt)
+          SUBJECT="Dates changed on repo: $(git rev-parse --abbrev-ref HEAD)"
+          BODY="Dates changed. Summary:\n\n$DIFF"
+          curl -s --request POST \
+            --url https://api.sendgrid.com/v3/mail/send \
+            --header "Authorization: Bearer $SENDGRID_API_KEY" \
+            --header 'Content-Type: application/json' \
+            --data "$(jq -n --arg subj "$SUBJECT" --arg body "$BODY" --arg to "$ALERT_TO" '{
+              personalizations: [{ to: [{ email: $to }] }],
+              from: { email: "noreply@yourdomain.com" },
+              subject: $subj,
+              content: [{ type: "text/plain", value: $body }]
+            }')"
+        env:
+          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+          ALERT_TO: ${{ secrets.ALERT_TO }}
