@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       changed: ${{ steps.compare.outputs.changed }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -56,25 +57,30 @@ jobs:
           DIFF_JSON=$(cat diff.json)
 
           HTML=$(jq -n --argjson diff "$DIFF_JSON" '
-            "<h2 style=\"font-family:Arial;\">Gig Date Changes</h2>" +
-            (if ($diff.added | length) > 0 then
-              "<h3 style=\"color:green;\">Added</h3><ul>" +
-              (($diff.added | map("<li><strong>\(.date)</strong> – \(.venue)</li>")) | join("")) +
-              "</ul>"
-            else "" end) +
-            (if ($diff.removed | length) > 0 then
-              "<h3 style=\"color:red;\">Removed</h3><ul>" +
-              (($diff.removed | map("<li><strong>\(.date)</strong> – \(.venue)</li>")) | join("")) +
-              "</ul>"
-            else "" end) +
-            (if ($diff.changed | length) > 0 then
-              "<h3 style=\"color:orange;\">Changed</h3><ul>" +
-              (($diff.changed | map("<li><strong>\(.key)</strong>: \(.old) → \(.new)</li>")) | join("")) +
-              "</ul>"
-            else "" end)
+            "<h2 style=\"font-family:Arial;\">Band Member Unavailable Date Changes</h2>" +
+            (
+              $diff
+              | to_entries
+              | map(
+                  "<h3 style=\"font-family:Arial;\">" + .key + "</h3>" +
+
+                  (if (.value.added | length) > 0 then
+                    "<strong style=\"color:green;\">Added:</strong><ul>" +
+                    (.value.added | map("<li>\(.)</li>") | join("")) +
+                    "</ul>"
+                  else "" end) +
+
+                  (if (.value.removed | length) > 0 then
+                    "<strong style=\"color:red;\">Removed:</strong><ul>" +
+                    (.value.removed | map("<li>\(.)</li>") | join("")) +
+                    "</ul>"
+                  else "" end)
+              )
+              | join("<br>")
+            )
           ')
 
-          SUBJECT="Gig dates updated"
+          SUBJECT="Band Member Unavailable Date Changes"
 
           curl -s --request POST \
             --url https://api.sendgrid.com/v3/mail/send \
