@@ -41,7 +41,7 @@ function loadHtmlFromUrl(url) {
 
 function extractDataFromHtml(html) {
   const $ = cheerio.load(html);
-  // Strategy: to find script tags and search for "var DATA =" or "DATA ="
+  // Strategy: find script tags and search for "var DATA =" or "DATA ="
   const scripts = $('script').toArray().map(s => $(s).html()).filter(Boolean);
   for (const s of scripts) {
     const m = s.match(/(?:var\s+)?DATA\s*=\s*(\{[\s\S]*\});?/);
