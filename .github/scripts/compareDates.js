@@ -72,44 +72,37 @@ function extractDataFromHtml(html) {
   throw new Error("DATA object not found in HTML");
 }
 
-function diffObjects(oldObj, newObj) {
+function diffObjects(oldArr, newArr) {
   const added = [];
   const removed = [];
   const changed = [];
 
-  const oldMap = new Map();
-  if (Array.isArray(oldObj)) {
-    for (const item of oldObj) oldMap.set(JSON.stringify(item), item);
+  // Convert arrays into maps keyed by date
+  const oldMap = new Map(oldArr.map(item => [item.date, item]));
+  const newMap = new Map(newArr.map(item => [item.date, item]));
+
+  // Check for added or changed
+  for (const [date, newItem] of newMap.entries()) {
+    if (!oldMap.has(date)) {
+      added.push(newItem);
+    } else {
+      const oldItem = oldMap.get(date);
+      if (JSON.stringify(oldItem) !== JSON.stringify(newItem)) {
+        changed.push({ date, old: oldItem, new: newItem });
+      }
+    }
   }
 
-  const newMap = new Map();
-  if (Array.isArray(newObj)) {
-    for (const item of newObj) newMap.set(JSON.stringify(item), item);
-  }
-
-  if (Array.isArray(oldObj) && Array.isArray(newObj)) {
-    for (const [k, v] of newMap) {
-      if (!oldMap.has(k)) added.push(v);
-    }
-    for (const [k, v] of oldMap) {
-      if (!newMap.has(k)) removed.push(v);
-    }
-  } else {
-    // shallow compare keys
-    const oldKeys = oldObj ? Object.keys(oldObj) : [];
-    const newKeys = newObj ? Object.keys(newObj) : [];
-    for (const k of newKeys) {
-      if (!oldObj || !(k in oldObj)) added.push({ key: k, value: newObj[k] });
-      else if (JSON.stringify(oldObj[k]) !== JSON.stringify(newObj[k]))
-        changed.push({ key: k, old: oldObj[k], new: newObj[k] });
-    }
-    for (const k of oldKeys) {
-      if (!newObj || !(k in newObj)) removed.push({ key: k, value: oldObj[k] });
+  // Check for removed
+  for (const [date, oldItem] of oldMap.entries()) {
+    if (!newMap.has(date)) {
+      removed.push(oldItem);
     }
   }
 
   return { added, removed, changed };
 }
+
 
 (async function main() {
   try {
