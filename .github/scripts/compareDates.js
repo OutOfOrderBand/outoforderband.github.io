@@ -7,10 +7,10 @@ const cheerio = require("cheerio");
 const DATA_FILE = path.join("data", "data.json");
 const DIFF_FILE = path.join(".", "diff.txt");
 
-// Canonicalize object keys for stable comparison
+// Canonicalize object keys and arrays for stable comparison
 function canonicalize(obj) {
   if (Array.isArray(obj)) {
-    return obj.map(canonicalize);
+    return obj.map(canonicalize).sort();
   }
   if (obj && typeof obj === "object") {
     const keys = Object.keys(obj).sort();
@@ -95,10 +95,8 @@ function diffUnavailable(oldObj, newObj) {
 
 (async function main() {
   try {
-    let html = null;
     const pageUrl = process.env.PAGE_URL;
-
-    html = pageUrl ? loadHtmlFromUrl(pageUrl) : loadHtmlFromRepo();
+    const html = pageUrl ? loadHtmlFromUrl(pageUrl) : loadHtmlFromRepo();
     if (!html) throw new Error("No HTML source available");
 
     const rawData = extractDataFromHtml(html);
@@ -110,7 +108,9 @@ function diffUnavailable(oldObj, newObj) {
     let oldData = {};
     if (fs.existsSync(DATA_FILE)) {
       try {
-        oldData = JSON.parse(fs.readFileSync(DATA_FILE, "utf8")).unavailableDates;
+        oldData = canonicalize(
+          JSON.parse(fs.readFileSync(DATA_FILE, "utf8")).unavailableDates
+        );
       } catch (e) {
         console.warn("Failed to parse existing data.json, treating as empty");
       }
@@ -120,7 +120,7 @@ function diffUnavailable(oldObj, newObj) {
     const diff = diffUnavailable(oldData, newData);
     const changed = Object.keys(diff).length > 0;
 
-    // Save updated data.json
+    // Save updated data.json ONLY if changed
     if (changed) {
       fs.mkdirSync(path.dirname(DATA_FILE), { recursive: true });
       fs.writeFileSync(
@@ -129,7 +129,6 @@ function diffUnavailable(oldObj, newObj) {
         "utf8"
       );
     }
-
 
     // Write human-readable diff.txt
     const lines = [];
@@ -155,10 +154,10 @@ function diffUnavailable(oldObj, newObj) {
     // Write structured diff.json for HTML email
     fs.writeFileSync("diff.json", JSON.stringify(diff, null, 2), "utf8");
 
-    // Output for GitHub Actions
-    console.log(`::set-output name=changed::${changed ? "true" : "false"}`);
-    process.exit(0);
+    // Output for GitHub Actions (modern method)
+    fs.appendFileSync(process.env.GITHUB_OUTPUT, `changed=${changed}\n`);
 
+    process.exit(0);
   } catch (err) {
     console.error("Error in compareDates.js:", err);
     process.exit(2);
