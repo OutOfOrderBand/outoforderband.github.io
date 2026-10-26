@@ -98,14 +98,22 @@ jobs:
             --url https://api.sendgrid.com/v3/mail/send \
             --header "Authorization: Bearer $SENDGRID_API_KEY" \
             --header 'Content-Type: application/json' \
-            --data "$(jq -n --arg subj "$SUBJECT" --arg html "$HTML" --arg to "$ALERT_TO" '
-              {
-                personalizations: [{ to: [{ email: $to }] }],
-                from: { email: "hi@normansolutions.co.uk" },
-                subject: $subj,
-                content: [{ type: "text/html", value: $html }]
-              }
-            ')"
+          --data "$(jq -n --arg subj "$SUBJECT" --arg html "$HTML" --arg to "$ALERT_TO" '
+            {
+              personalizations: [
+                {
+                  to: (
+                    $to
+                    | split(",")
+                    | map({ email: . })
+                  )
+                }
+              ],
+              from: { email: "hi@normansolutions.co.uk" },
+              subject: $subj,
+              content: [{ type: "text/html", value: $html }]
+            }
+          ')"
         env:
           SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
           ALERT_TO: ${{ secrets.ALERT_TO }}
