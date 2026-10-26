@@ -57,28 +57,60 @@ jobs:
           DIFF_JSON=$(cat diff.json)
 
           HTML=$(jq -n --argjson diff "$DIFF_JSON" '
-            "<h2 style=\"font-family:Arial;\">Band Member Unavailable Date Changes</h2>" +
+            "<h2 style=\"font-family:Arial; color:#333;\">Band Member Unavailable Date Changes</h2>" +
+
+            "<table style=\"border-collapse:collapse; width:100%; font-family:Arial;\">" +
+
             (
               $diff
               | to_entries
               | map(
-                  "<h3 style=\"font-family:Arial;\">" + .key + "</h3>" +
+                  "<tr style=\"background:#f0f0f0;\">
+                    <td colspan=\"3\" style=\"padding:10px; font-size:16px; font-weight:bold; border:1px solid #ccc;\">
+                      " + .key + "
+                    </td>
+                  </tr>" +
 
-                  (if (.value.added | length) > 0 then
-                    "<strong style=\"color:green;\">Added:</strong><ul>" +
-                    (.value.added | map("<li>\(.)</li>") | join("")) +
-                    "</ul>"
-                  else "" end) +
+                  (
+                    if (.value.added | length) > 0 then
+                      (.value.added
+                        | map(
+                            "<tr>
+                              <td style=\"padding:8px; border:1px solid #ccc; width:120px;\">
+                                <span style=\"color:green; font-weight:bold;\">Added</span>
+                              </td>
+                              <td style=\"padding:8px; border:1px solid #ccc;\">" + . + "</td>
+                              <td style=\"padding:8px; border:1px solid #ccc; color:green;\">✔️</td>
+                            </tr>"
+                          )
+                        | join("")
+                      )
+                    else "" end
+                  ) +
 
-                  (if (.value.removed | length) > 0 then
-                    "<strong style=\"color:red;\">Removed:</strong><ul>" +
-                    (.value.removed | map("<li>\(.)</li>") | join("")) +
-                    "</ul>"
-                  else "" end)
+                  (
+                    if (.value.removed | length) > 0 then
+                      (.value.removed
+                        | map(
+                            "<tr>
+                              <td style=\"padding:8px; border:1px solid #ccc; width:120px;\">
+                                <span style=\"color:red; font-weight:bold;\">Removed</span>
+                              </td>
+                              <td style=\"padding:8px; border:1px solid #ccc;\">" + . + "</td>
+                              <td style=\"padding:8px; border:1px solid #ccc; color:red;\">❌</td>
+                            </tr>"
+                          )
+                        | join("")
+                      )
+                    else "" end
+                  )
               )
-              | join("<br>")
-            )
+              | join("")
+            ) +
+
+            "</table>"
           ')
+
 
           SUBJECT="Band Member Unavailable Date Changes"
 

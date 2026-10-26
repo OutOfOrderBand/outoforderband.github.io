@@ -1,6 +1,7 @@
 /hugo
 docs/public*
 /.idea
+/data/data.json
 hugo.exe
 *.test
 *.prof
