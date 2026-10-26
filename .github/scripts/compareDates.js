@@ -121,12 +121,15 @@ function diffUnavailable(oldObj, newObj) {
     const changed = Object.keys(diff).length > 0;
 
     // Save updated data.json
-    fs.mkdirSync(path.dirname(DATA_FILE), { recursive: true });
-    fs.writeFileSync(
-      DATA_FILE,
-      JSON.stringify({ unavailableDates: newData }, null, 2),
-      "utf8"
-    );
+    if (changed) {
+      fs.mkdirSync(path.dirname(DATA_FILE), { recursive: true });
+      fs.writeFileSync(
+        DATA_FILE,
+        JSON.stringify({ unavailableDates: newData }, null, 2),
+        "utf8"
+      );
+    }
+
 
     // Write human-readable diff.txt
     const lines = [];
