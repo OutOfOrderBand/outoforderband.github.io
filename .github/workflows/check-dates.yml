@@ -53,64 +53,44 @@ jobs:
 
       - name: Send email via SendGrid if changed
         if: steps.compare.outputs.changed == 'true'
+        shell: bash
         run: |
           DIFF_JSON=$(cat diff.json)
 
-          HTML=$(jq -n --argjson diff "$DIFF_JSON" '
-            "<h2 style=\"font-family:Arial; color:#333;\">Band Member Unavailable Date Changes</h2>" +
+          # Build HTML in bash instead of jq
+          HTML="<h2 style='font-family:Arial; color:#333;'>Band Member Unavailable Date Changes</h2>"
+          HTML+="<table style='border-collapse:collapse; width:100%; font-family:Arial;'>"
 
-            "<table style=\"border-collapse:collapse; width:100%; font-family:Arial;\">" +
+          # Loop through JSON using jq
+          for member in $(echo "$DIFF_JSON" | jq -r 'keys[]'); do
+            HTML+="<tr style='background:#f0f0f0;'>
+                    <td colspan='3' style='padding:10px; font-size:16px; font-weight:bold; border:1px solid #ccc;'>$member</td>
+                  </tr>"
 
-            (
-              $diff
-              | to_entries
-              | map(
-                  "<tr style=\"background:#f0f0f0;\">
-                    <td colspan=\"3\" style=\"padding:10px; font-size:16px; font-weight:bold; border:1px solid #ccc;\">
-                      " + .key + "
-                    </td>
-                  </tr>" +
+            # Added dates
+            for d in $(echo "$DIFF_JSON" | jq -r --arg m "$member" '.[$m].added[]?'); do
+              HTML+="<tr>
+                      <td style='padding:8px; border:1px solid #ccc; width:120px;'>
+                        <span style='color:green; font-weight:bold;'>Added</span>
+                      </td>
+                      <td style='padding:8px; border:1px solid #ccc;'>$d</td>
+                      <td style='padding:8px; border:1px solid #ccc; color:green;'>✔️</td>
+                    </tr>"
+            done
 
-                  (
-                    if (.value.added | length) > 0 then
-                      (.value.added
-                        | map(
-                            "<tr>
-                              <td style=\"padding:8px; border:1px solid #ccc; width:120px;\">
-                                <span style=\"color:green; font-weight:bold;\">Added</span>
-                              </td>
-                              <td style=\"padding:8px; border:1px solid #ccc;\">" + . + "</td>
-                              <td style=\"padding:8px; border:1px solid #ccc; color:green;\">✔️</td>
-                            </tr>"
-                          )
-                        | join("")
-                      )
-                    else "" end
-                  ) +
+            # Removed dates
+            for d in $(echo "$DIFF_JSON" | jq -r --arg m "$member" '.[$m].removed[]?'); do
+              HTML+="<tr>
+                      <td style='padding:8px; border:1px solid #ccc; width:120px;'>
+                        <span style='color:red; font-weight:bold;'>Removed</span>
+                      </td>
+                      <td style='padding:8px; border:1px solid #ccc;'>$d</td>
+                      <td style='padding:8px; border:1px solid #ccc; color:red;'>❌</td>
+                    </tr>"
+            done
+          done
 
-                  (
-                    if (.value.removed | length) > 0 then
-                      (.value.removed
-                        | map(
-                            "<tr>
-                              <td style=\"padding:8px; border:1px solid #ccc; width:120px;\">
-                                <span style=\"color:red; font-weight:bold;\">Removed</span>
-                              </td>
-                              <td style=\"padding:8px; border:1px solid #ccc;\">" + . + "</td>
-                              <td style=\"padding:8px; border:1px solid #ccc; color:red;\">❌</td>
-                            </tr>"
-                          )
-                        | join("")
-                      )
-                    else "" end
-                  )
-              )
-              | join("")
-            ) +
-
-            "</table>"
-          ')
-
+          HTML+="</table>"
 
           SUBJECT="Band Member Unavailable Date Changes"
 
@@ -129,3 +109,81 @@ jobs:
         env:
           SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
           ALERT_TO: ${{ secrets.ALERT_TO }}
+
+              if: steps.compare.outputs.changed == 'true'
+              run: |
+                DIFF_JSON=$(cat diff.json)
+
+                HTML=$(jq -n --argjson diff "$DIFF_JSON" '
+                  "<h2 style=\"font-family:Arial; color:#333;\">Band Member Unavailable Date Changes</h2>" +
+
+                  "<table style=\"border-collapse:collapse; width:100%; font-family:Arial;\">" +
+
+                  (
+                    $diff
+                    | to_entries
+                    | map(
+                        "<tr style=\"background:#f0f0f0;\">
+                          <td colspan=\"3\" style=\"padding:10px; font-size:16px; font-weight:bold; border:1px solid #ccc;\">
+                            " + .key + "
+                          </td>
+                        </tr>" +
+
+                        (
+                          if (.value.added | length) > 0 then
+                            (.value.added
+                              | map(
+                                  "<tr>
+                                    <td style=\"padding:8px; border:1px solid #ccc; width:120px;\">
+                                      <span style=\"color:green; font-weight:bold;\">Added</span>
+                                    </td>
+                                    <td style=\"padding:8px; border:1px solid #ccc;\">" + . + "</td>
+                                    <td style=\"padding:8px; border:1px solid #ccc; color:green;\">✔️</td>
+                                  </tr>"
+                                )
+                              | join("")
+                            )
+                          else "" end
+                        ) +
+
+                        (
+                          if (.value.removed | length) > 0 then
+                            (.value.removed
+                              | map(
+                                  "<tr>
+                                    <td style=\"padding:8px; border:1px solid #ccc; width:120px;\">
+                                      <span style=\"color:red; font-weight:bold;\">Removed</span>
+                                    </td>
+                                    <td style=\"padding:8px; border:1px solid #ccc;\">" + . + "</td>
+                                    <td style=\"padding:8px; border:1px solid #ccc; color:red;\">❌</td>
+                                  </tr>"
+                                )
+                              | join("")
+                            )
+                          else "" end
+                        )
+                    )
+                    | join("")
+                  ) +
+
+                  "</table>"
+                ')
+
+
+                SUBJECT="Band Member Unavailable Date Changes"
+
+                curl -s --request POST \
+                  --url https://api.sendgrid.com/v3/mail/send \
+                  --header "Authorization: Bearer $SENDGRID_API_KEY" \
+                  --header 'Content-Type: application/json' \
+                  --data "$(jq -n --arg subj "$SUBJECT" --arg html "$HTML" --arg to "$ALERT_TO" '
+                    {
+                      personalizations: [{ to: [{ email: $to }] }],
+                      from: { email: "hi@normansolutions.co.uk" },
+                      subject: $subj,
+                      content: [{ type: "text/html", value: $html }]
+                    }
+                  ')"
+              env:
+                SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+                ALERT_TO: ${{ secrets.ALERT_TO }}
