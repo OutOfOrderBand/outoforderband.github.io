@@ -29,8 +29,8 @@ jobs:
 
       - name: Run compare script
         id: compare
-        run: |
-          node .github/scripts/compareDates.js
+        shell: bash
+        run: node .github/scripts/compareDates.js
 
       - name: Show diff in summary
         run: |
