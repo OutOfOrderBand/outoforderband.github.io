@@ -1,7 +1,7 @@
 // =======================
 // Imports & Variables
 // =======================
-@import "_include-media.scss";
+@import "include-media";
 
 $ooob-red: #c62129;
 $ooob-white: #fff;
@@ -629,5 +629,5 @@ footer {
   border-radius: 8px;
   margin-bottom: 1rem;
   font-size: 1.1em;
-  width: 1
+  width: 100%;
 }
