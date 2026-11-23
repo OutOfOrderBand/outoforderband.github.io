@@ -3,7 +3,7 @@
 
 {{ $normalize := resources.Get "normalize.css" }}
 {{ $milligram := resources.Get "milligram.min.css" }}
-{{ $fancybox := resources.Get "jquery.fancybox.css" }}
+{{ $fancybox := resources.Get "jquery.fancybox.scss"  | toCSS }}
 
 {{ $style := slice $normalize $milligram $maincss $fancybox | resources.Concat "css/main.css" }}
 {{ $style = $style | minify | fingerprint "sha256" }}
