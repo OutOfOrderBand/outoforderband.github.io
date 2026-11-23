@@ -2,51 +2,51 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>http://localhost:1313/duo/</loc>
+    <loc>https://outoforderband.co.uk/duo/</loc>
     <lastmod>2020-09-19T00:00:01&#43;00:00</lastmod>
     <priority>-1</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="http://localhost:1313/duo/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://outoforderband.co.uk/duo/" />
   </url>
   <url>
-    <loc>http://localhost:1313/</loc>
+    <loc>https://outoforderband.co.uk/</loc>
     <lastmod>2020-09-19T00:00:01&#43;00:00</lastmod>
     <priority>-1</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="http://localhost:1313/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://outoforderband.co.uk/" />
   </url>
   <url>
-    <loc>http://localhost:1313/contact/</loc>
+    <loc>https://outoforderband.co.uk/contact/</loc>
     <lastmod>2020-09-19T00:00:01&#43;00:00</lastmod>
     <priority>-1</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="http://localhost:1313/contact/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://outoforderband.co.uk/contact/" />
   </url>
   <url>
-    <loc>http://localhost:1313/gigs/</loc>
+    <loc>https://outoforderband.co.uk/gigs/</loc>
     <lastmod>2020-09-19T00:00:01&#43;00:00</lastmod>
     <priority>-1</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="http://localhost:1313/gigs/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://outoforderband.co.uk/gigs/" />
   </url>
   <url>
-    <loc>http://localhost:1313/setlist/</loc>
+    <loc>https://outoforderband.co.uk/setlist/</loc>
     <lastmod>2020-09-19T00:00:01&#43;00:00</lastmod>
     <priority>-1</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="http://localhost:1313/setlist/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://outoforderband.co.uk/setlist/" />
   </url>
   <url>
-    <loc>http://localhost:1313/videos/</loc>
+    <loc>https://outoforderband.co.uk/videos/</loc>
     <lastmod>2020-09-19T00:00:01&#43;00:00</lastmod>
     <priority>-1</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="http://localhost:1313/videos/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://outoforderband.co.uk/videos/" />
   </url>
   <url>
-    <loc>http://localhost:1313/categories/</loc>
+    <loc>https://outoforderband.co.uk/categories/</loc>
     <lastmod>0001-01-01T00:00:00&#43;00:00</lastmod>
     <priority>-1</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="http://localhost:1313/categories/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://outoforderband.co.uk/categories/" />
   </url>
   <url>
-    <loc>http://localhost:1313/tags/</loc>
+    <loc>https://outoforderband.co.uk/tags/</loc>
     <lastmod>0001-01-01T00:00:00&#43;00:00</lastmod>
     <priority>-1</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="http://localhost:1313/tags/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://outoforderband.co.uk/tags/" />
   </url>
 </urlset>

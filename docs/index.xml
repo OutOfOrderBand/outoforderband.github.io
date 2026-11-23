@@ -2,7 +2,7 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 	<channel>
 		<title>Out Of Order Band</title>
-		<link>http://localhost:1313/</link>
+		<link>https://outoforderband.co.uk/</link>
 		<description>Recent content on Out Of Order Band</description>
 		<generator>Hugo</generator>
 		<language>en-GB</language>
@@ -12,40 +12,40 @@
 		
 			<lastBuildDate>Sat, 19 Sep 2020 00:00:01 +0000</lastBuildDate>
 		
-			<atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+			<atom:link href="https://outoforderband.co.uk/index.xml" rel="self" type="application/rss+xml" />
 			<item>
 				<title>Darren &amp; Clive</title>
-				<link>http://localhost:1313/duo/</link>
+				<link>https://outoforderband.co.uk/duo/</link>
 				<pubDate>Sat, 19 Sep 2020 00:00:01 +0000</pubDate>
-				<guid>http://localhost:1313/duo/</guid>
+				<guid>https://outoforderband.co.uk/duo/</guid>
 				<description></description>
 			</item>
 			<item>
 				<title>Out Of Order Band Contact</title>
-				<link>http://localhost:1313/contact/</link>
+				<link>https://outoforderband.co.uk/contact/</link>
 				<pubDate>Sat, 19 Sep 2020 00:00:01 +0000</pubDate>
-				<guid>http://localhost:1313/contact/</guid>
+				<guid>https://outoforderband.co.uk/contact/</guid>
 				<description></description>
 			</item>
 			<item>
 				<title>Out Of Order Band Gigs</title>
-				<link>http://localhost:1313/gigs/</link>
+				<link>https://outoforderband.co.uk/gigs/</link>
 				<pubDate>Sat, 19 Sep 2020 00:00:01 +0000</pubDate>
-				<guid>http://localhost:1313/gigs/</guid>
+				<guid>https://outoforderband.co.uk/gigs/</guid>
 				<description></description>
 			</item>
 			<item>
 				<title>Out Of Order Band Set list</title>
-				<link>http://localhost:1313/setlist/</link>
+				<link>https://outoforderband.co.uk/setlist/</link>
 				<pubDate>Sat, 19 Sep 2020 00:00:01 +0000</pubDate>
-				<guid>http://localhost:1313/setlist/</guid>
+				<guid>https://outoforderband.co.uk/setlist/</guid>
 				<description></description>
 			</item>
 			<item>
 				<title>Out Of Order Band Videos</title>
-				<link>http://localhost:1313/videos/</link>
+				<link>https://outoforderband.co.uk/videos/</link>
 				<pubDate>Sat, 19 Sep 2020 00:00:01 +0000</pubDate>
-				<guid>http://localhost:1313/videos/</guid>
+				<guid>https://outoforderband.co.uk/videos/</guid>
 				<description></description>
 			</item>
 	</channel>
